@@ -8,4 +8,12 @@ def login():
     if request.method == "POST":
         pass
 
-    return render_template("/auth/login.html")
+    return render_template("auth/login.html")
+
+
+@bp.route("/auth/signup", methods=("GET", "POST"))
+def signup():
+    if request.method == "POST":
+        pass
+
+    return render_template("auth/signup.html")
