@@ -5,6 +5,7 @@ setup(
     packages=["shifter"],
     install_requires=[
         "flask",
-        "pymongo"
+        "pymongo",
+        "certifi",
     ]
 )
