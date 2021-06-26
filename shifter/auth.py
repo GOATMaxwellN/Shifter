@@ -1,17 +1,24 @@
 from flask import Blueprint, render_template, request
 
-bp = Blueprint("auth", "shifter")
+from db import get_db
 
 
-@bp.route("/auth/login", methods=("GET", "POST"))
+bp = Blueprint("auth", "shifter", url_prefix="/auth")
+
+
+@bp.route("/login", methods=("GET", "POST"))
 def login():
     if request.method == "POST":
-        pass
+        username = request.form["username"]
+        password = request.form["password"]
+
+        # check if username already exists
+        db = get_db()
 
     return render_template("auth/login.html")
 
 
-@bp.route("/auth/signup", methods=("GET", "POST"))
+@bp.route("/signup", methods=("GET", "POST"))
 def signup():
     if request.method == "POST":
         pass
