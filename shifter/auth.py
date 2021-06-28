@@ -33,10 +33,12 @@ def login():
             else:
                 error = "Incorrect password"
 
+        return render_template("auth/login.html", error=error)
+
     # request.args may include a just_registered variable, which means
     # the user has just signed up. The page will then provide a message
     # to the user that they can use their info to login now
-    return render_template("auth/login.html", error=error, **request.args)
+    return render_template("auth/login.html", **request.args)
 
 
 @bp.route("/signup", methods=("GET", "POST"))
