@@ -33,7 +33,10 @@ def login():
             else:
                 error = "Incorrect password"
 
-    return render_template("auth/login.html", error=error)
+    # request.args may include a just_registered variable, which means
+    # the user has just signed up. The page will then provide a message
+    # to the user that they can use their info to login now
+    return render_template("auth/login.html", error=error, **request.args)
 
 
 @bp.route("/signup", methods=("GET", "POST"))
@@ -64,7 +67,7 @@ def signup():
                         "Outlook": False,
                     },
                 })
-                redirect(url_for("auth.login"))
+                redirect(url_for("auth.login", just_registered=True))
             else:
                 error = "Password must contain at least 6 characters, " \
                         "1 uppercase letter and a number"
