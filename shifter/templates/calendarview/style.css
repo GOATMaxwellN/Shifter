@@ -1,0 +1,21 @@
+/* Main page layout */
+.content {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: 1fr 4fr;
+}
+
+.config-values {
+    grid-column: 1 / 3;
+    grid-row: 1 / 2
+}
+
+.calendar {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+}
+
+.shift-values {
+    grid-column: 1 / 3;
+    grid-row: 2 / 3;
+}

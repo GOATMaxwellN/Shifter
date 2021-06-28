@@ -14,7 +14,12 @@ def create_app(test_config=None):
     from . import auth
     app.register_blueprint(auth.bp)
 
+    from . import calendar
+    app.register_blueprint(calendar.bp)
+
     from . import db
-    db.init_app(app)
+    # db.init_app() needs access to app config values
+    with app.app_context():
+        db.init_app()
 
     return app

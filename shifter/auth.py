@@ -1,9 +1,11 @@
 from flask import (
-    Blueprint, render_template, request, redirect, url_for)
+    Blueprint, render_template, request, redirect, url_for, session)
 from hashlib import scrypt
 from shifter.db import get_db
 import re
 import os
+from functools import wraps
+from bson.objectid import ObjectId
 
 
 bp = Blueprint("auth", "shifter", url_prefix="/auth")
@@ -24,11 +26,16 @@ def login():
         for doc in db.users.find({"username": username}):
             user = doc
 
+        # If users exists, check password hashes
         if user is None:
             error = "Username doesn't exist"
         else:
+            # If password is correct, add user to the session,
+            # and redirect to calendar view
             pass_hash = generate_password_hash(password, user["salt"])
             if pass_hash == user["password_hash"]:
+                # ObjectId is not JSON serializable, so convert to str
+                session["user_id"] = str(user["_id"])
                 return redirect(url_for("calendarview.index"))
             else:
                 error = "Incorrect password"
@@ -65,6 +72,7 @@ def signup():
                     "username": username,
                     "password_hash": pass_hash,
                     "salt": salt,
+                    "shifts": {},
                     "connected_calendars": {
                         "Google": False,
                         "Outlook": False,
@@ -92,3 +100,19 @@ def validate_password(password):
        and PASSWORD_VALIDATION_PATTERN.match(password) is not None):
        return True
     return False
+
+
+def login_required(f):
+    @wraps(f)
+    def wrapper():
+        if "user_id" not in session:
+            return redirect(url_for("auth.login"))
+        return f()
+    return wrapper
+
+
+def get_logged_in_user():
+    db = get_db()
+    # Have to convert back to ObjectId to actually match with db
+    user_id = ObjectId(oid=session["user_id"])
+    return db.users.find({"_id": user_id})[0]

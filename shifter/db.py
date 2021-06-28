@@ -1,14 +1,15 @@
-from pymongo import MongoClient
+from flask import current_app
+
+from pymongo.mongo_client import MongoClient
 import certifi
 
 
-def init_db(app):
+def init_db():
     global db
-    with app.app_context():
-        client = MongoClient(
-            app.config["MONGO_DB_SETTINGS"]["CONNECTION_STRING"],
-            tlsCAFile=certifi.where(),
-        )
+    client = MongoClient(
+        current_app.config["MONGO_DB_SETTINGS"]["CONNECTION_STRING"],
+        tlsCAFile=certifi.where(),
+    )
     db = client.ShifterDB
 
 
@@ -20,6 +21,6 @@ def close_db(e=None):
     db.client.close()
 
 
-def init_app(app):
-    init_db(app)
-    app.teardown_appcontext(close_db)
+def init_app():
+    init_db()
+    current_app.teardown_appcontext(close_db)
