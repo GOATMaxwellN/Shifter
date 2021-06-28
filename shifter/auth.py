@@ -16,7 +16,7 @@ PASSWORD_VALIDATION_PATTERN = re.compile(r"^(?=.*\d)(?=.*[A-Z])")
 def login():
     if request.method == "POST":
         username = request.form["username"]
-        password = request.form["password"].encode(encoding="ascii")
+        password = request.form["password"]
         error = None
 
         db = get_db()
@@ -29,7 +29,7 @@ def login():
         else:
             pass_hash = generate_password_hash(password, user["salt"])
             if pass_hash == user["password_hash"]:
-                redirect(url_for("calendarview.index"))
+                return redirect(url_for("calendarview.index"))
             else:
                 error = "Incorrect password"
 
@@ -44,8 +44,9 @@ def login():
 @bp.route("/signup", methods=("GET", "POST"))
 def signup():
     if request.method == "POST":
-        username = request["username"]
-        password = request["password"]
+        username = request.form["username"]
+        password = request.form["password"]
+        error = None
 
         db = get_db()
         # Check if username exists already
@@ -69,18 +70,21 @@ def signup():
                         "Outlook": False,
                     },
                 })
-                redirect(url_for("auth.login", just_registered=True))
+                return redirect(url_for("auth.login", newly_registered=True))
             else:
                 error = "Password must contain at least 6 characters, " \
                         "1 uppercase letter and a number"
         else:
             error = "Username already taken. Pick another one."
 
-    return render_template("auth/signup.html", error=error)
+        return render_template("auth/signup.html", error=error)
+
+    return render_template("auth/signup.html")
 
 
 def generate_password_hash(password, salt):
-    return scrypt(password, salt, n=16384, r=8, p=1)
+    encoded_pw = password.encode("ascii")
+    return scrypt(encoded_pw, salt=salt, n=16384, r=8, p=1)
 
 
 def validate_password(password):
