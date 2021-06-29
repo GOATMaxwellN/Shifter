@@ -1,21 +1,75 @@
+* {
+    border: 1px solid black; /* Remove this later */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 1em;
+    width: 100vw;
+    height: 100vh;
+}
+
+body {
+    height: 100%;
+    width: 100%;
+}
+
+/* Header with Shifter and user greeting */
+header {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    height: 10%;
+}
+
+header h1 {
+    grid-column: 1 / 2;
+    
+}
+
+header p {
+    grid-column: 2 / 3;
+    text-align: right;
+    padding-top: 1rem;
+}
+
 /* Main page layout */
 .content {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: 1fr 4fr;
+    grid-template-columns: 4fr 1fr;
+    grid-template-rows: 1fr 10fr;
+    height: 90%;
 }
 
 .config-values {
     grid-column: 1 / 3;
-    grid-row: 1 / 2
+    grid-row: 1 / 2;
+    background-color: #ABEBC6;
+}
+
+.calendar-wrapper {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+    background-color: #AED6F1;
+    position: relative;
+}
+
+.shift-config {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+    background-color: #F5B7B1;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-auto-flow: row;
+    grid-auto-rows: 10%;
 }
 
 .calendar {
-    grid-column: 1 / 2;
-    grid-row: 2 / 3;
-}
-
-.shift-values {
-    grid-column: 1 / 3;
-    grid-row: 2 / 3;
+    width: 95%;
+    height: 95%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
