@@ -2,7 +2,8 @@
 <html>
     <head>
         <title>Shifter - Calendar View</title>
-        <link rel="stylesheet" href="C:\Users\Maxwell\OneDrive\My_Cool_Programs\Shifter\shifter\templates\calendarview\style.css">
+        <link rel="stylesheet" href="{{ url_for("static", filename="calendarview/style.css") }}">
+        <script src="{{ url_for("static", filename="calendarview/script.js") }}"></script>
     </head>
     <body>
         <header>
@@ -12,7 +13,16 @@
         <section class="content">
             <div class="config-values">config</div>
             <div class="calendar-wrapper">
-                <div class="calendar">calendar</div>
+                <div class="calendar">
+                    {% if calendar != none %}
+                    <script>drawCalendar();</script>
+                    {% else %}
+                    <div class="connect-btns-wrapper">
+                        <button class="calendar-connect-btn google">Connect To Google Calendar</button>
+                        <button class="calendar-connect-btn outlook">Connect To Outlook Calendar</button>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
             <div class="shift-config">
                 <button class="create-shift-btn">+ Create shift</button>
