@@ -21,8 +21,14 @@ function drawCalendar(events) {
     calendar.innerHTML = html;
     // Populate the date boxes with events in them
     events.forEach(function(v, i, a) {
-        let start = new Date(v["start"]["dateTime"]);
-        let dateBox = document.getElementById("day" + start.getDate());
+        let start;
+        let dateBox;
+        if ("dateTime" in v["start"]) {
+            start = new Date(v["start"]["dateTime"]);
+        } else {
+            start = new Date(v["start"]["date"] + "T00:00:00" + OFFSET);
+        }
+        dateBox = document.getElementById("day" + start.getDate());
         dateBox.innerHTML += `<div class="event">${v.summary}</div>`
     });
 }
@@ -100,14 +106,40 @@ function googleListEvents(min, max) {
         drawCalendar(events);
     }
     let url = GOOGLE_LIST_EVENTS_ENDPOINT
-              + `?timeMin=${min}&timeMax=${max}&timezone=${TIMEZONE}`;
+              + `?timeMin=${min}&timeMax=${max}&timeZone=${TIMEZONE}`;
     req.open("GET", url);
     req.send();
 }
 
 
+function getTimeZoneOffset() {
+    let offset = new Date().getTimezoneOffset() / 60;
+    let sign;
+    if (offset > 0) { sign = "-" } else { sign = "+" }
+
+    // Insert a 0 in front of hour if hour is single digit
+    if (offset < 10 && offset > -10) {
+        // Special cases for offsets that have 30 or 45 in their minute field
+        if (Math.abs(offset) % 1 == 0.5) { 
+            return sign + `0${Math.abs(Math.trunc(offset))}:30`;
+        } else if (Math.abs(offset) % 1 == 0.75) {
+            return sign + `0${Math.abs(Math.trunc(offset))}:45`;
+        }
+        return sign + `0${Math.abs(offset)}:00`;
+    }
+
+    // Special cases for offsets that have 30 or 45 in their minute field
+    if (Math.abs(offset) % 1 == 0.5) {
+        return sign + `${Math.abs(Math.trunc(offset))}:30`;
+    } else if (Math.abs(offset) % 1 == 0.75) {
+        return sign + `${Math.abs(Math.trunc(offset))}:45`;
+    }
+    return sign + `${Math.abs(offset)}:00`;
+}
+
 const GOOGLE_LIST_EVENTS_ENDPOINT = "http://127.0.0.1:5000/oauth/google-list-events";
 const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
+const OFFSET = getTimeZoneOffset()
 const NAMES_OF_DAYS = `
     <span>Sunday</span>
     <span>Monday</span>

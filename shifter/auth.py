@@ -114,8 +114,6 @@ def login_required(f):
     return wrapper
 
 
-def get_logged_in_user():
-    db = get_db()
+def get_logged_in_user_id():
     # Have to convert back to ObjectId to actually match with db
-    user_id = ObjectId(oid=session["user_id"])
-    return db.users.find({"_id": user_id})[0]
+    return ObjectId(oid=session["user_id"])
