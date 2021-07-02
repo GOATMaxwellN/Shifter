@@ -77,6 +77,9 @@ def signup():
                         "Google": False,
                         "Outlook": False,
                     },
+                    "refresh_tokens": {
+                        "Google": None,
+                    }
                 })
                 return redirect(url_for("auth.login", newly_registered=True))
             else:

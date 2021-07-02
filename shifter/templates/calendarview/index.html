@@ -14,12 +14,12 @@
             <div class="config-values">config</div>
             <div class="calendar-wrapper">
                 <div class="calendar">
-                    {% if calendar != none %}
-                    <script>drawCalendar();</script>
+                    {% if calendar == "Google" %}
+                    <script>googleListEvents();</script>
                     {% else %}
                     <div class="connect-btns-wrapper">
-                        <button class="calendar-connect-btn google">Connect To Google Calendar</button>
-                        <button class="calendar-connect-btn outlook">Connect To Outlook Calendar</button>
+                        <button class="calendar-connect-btn google" type="button" onclick="connectToGoogle()">Connect To Google Calendar</button>
+                        <button class="calendar-connect-btn outlook" type="button">Connect To Outlook Calendar</button>
                     </div>
                     {% endif %}
                 </div>

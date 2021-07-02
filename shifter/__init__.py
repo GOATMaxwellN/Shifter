@@ -1,4 +1,5 @@
-from flask import Flask
+from flask import Flask, jsonify
+import json
 
 
 def create_app(test_config=None):
@@ -18,8 +19,9 @@ def create_app(test_config=None):
     app.register_blueprint(calendar.bp)
 
     from . import db
-    # db.init_app() needs access to app config values
     with app.app_context():
         db.init_app()
-
+        from . import oauth  # Need to init classes with app context 
+    app.register_blueprint(oauth.bp)
+    
     return app
