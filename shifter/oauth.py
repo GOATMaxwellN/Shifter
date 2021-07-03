@@ -5,6 +5,7 @@ import json
 from shifter.auth import get_logged_in_user_id
 import requests
 from shifter.db import get_db
+from functools import wraps
 
 
 bp = Blueprint("oauth", "shifter", url_prefix="/oauth")
@@ -127,7 +128,17 @@ def connect_to_google():
     return redirect(GoogleAuth.get_auth_url())
 
 
+def access_token_required(f):
+    wraps(f)
+    def wrapper():
+        if "access_token" not in session:
+            GoogleAuth.get_new_access_token()
+        return f()
+    return wrapper
+
+
 @bp.route("/google-list-events", methods=["GET"])
+@access_token_required
 def google_list_events():
     start, end = request.args["timeMin"], request.args["timeMax"]
     timezone = request.args["timeZone"]
