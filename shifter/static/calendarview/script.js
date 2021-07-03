@@ -148,7 +148,13 @@ function dismissErrMsg() {
     connect_btns.style.display = "block";
 }
 
+
+function getShifts() {
+
+}
+
 const GOOGLE_LIST_EVENTS_ENDPOINT = "http://127.0.0.1:5000/oauth/google-list-events";
+const GET_SHIFTS_ENDPOINT = "http://127.0.0.1:5000/api/get-shifts";
 const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const OFFSET = getTimeZoneOffset()
 const NAMES_OF_DAYS = `

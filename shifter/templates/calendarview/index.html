@@ -14,15 +14,18 @@
             <div class="config-values">config</div>
             <div class="calendar-wrapper">
                 <div class="calendar">
+                    <!-- User tried to connect a calendar and it failed (usually because they denied consent) -->
                     {% if denied != None %}
                     <div id="connect-btns-wrapper" class="connect-btns-wrapper" style="display:none;">
                         <button class="calendar-connect-btn google" type="button" onclick="connectToGoogle()">Connect To Google Calendar</button>
                         <button class="calendar-connect-btn outlook" type="button">Connect To Outlook Calendar</button>
                     </div>
                     <span id="error" onclick="dismissErrMsg()">Could not connect to calendar. Click to dismiss.</span>
+                    <!-- Display user's Google calendar -->
                     {% elif calendar == "Google" %}
                     <script>googleListEvents(startOfMonth(), endOfMonth());</script>
                     {% else %}
+                    <!-- User has no calendar, so these buttons are links to connect to supported calendars -->
                     <div class="connect-btns-wrapper">
                         <button class="calendar-connect-btn google" type="button" onclick="connectToGoogle()">Connect To Google Calendar</button>
                         <button class="calendar-connect-btn outlook" type="button">Connect To Outlook Calendar</button>
@@ -31,7 +34,10 @@
                 </div>
             </div>
             <div class="shift-config">
-                <button class="create-shift-btn">+ Create shift</button>
+                <button class="create-shift-btn" type="button">+ Create shift</button>
+                <select class="shifts-dropdown-list">
+                    <script>getShifts()</script>
+                </select>
             </div>
         </section>
     </body>
