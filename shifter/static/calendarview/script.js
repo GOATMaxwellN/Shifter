@@ -33,6 +33,7 @@ function drawCalendar(events) {
     });
 }
 
+
 function nextMonth() {
     let month = displayedYearAndMonth.getMonth();
     let year = displayedYearAndMonth.getFullYear();
@@ -49,6 +50,7 @@ function nextMonth() {
     googleListEvents(min, max);
 }
 
+
 function previousMonth() {
     let month = displayedYearAndMonth.getMonth();
     let year = displayedYearAndMonth.getFullYear();
@@ -64,6 +66,7 @@ function previousMonth() {
     let min = startOfMonth(), max = endOfMonth();
     googleListEvents(min, max);
 }
+
 
 function startOfMonth() {
     return new Date(
@@ -135,6 +138,14 @@ function getTimeZoneOffset() {
         return sign + `${Math.abs(Math.trunc(offset))}:45`;
     }
     return sign + `${Math.abs(offset)}:00`;
+}
+
+
+function dismissErrMsg() {
+    let err = document.getElementById("error");
+    let connect_btns = document.getElementById("connect-btns-wrapper");
+    err.remove();
+    connect_btns.style.display = "block";
 }
 
 const GOOGLE_LIST_EVENTS_ENDPOINT = "http://127.0.0.1:5000/oauth/google-list-events";

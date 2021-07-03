@@ -87,7 +87,6 @@ class GoogleAuth:
         )
 
         if r.status_code == 401:  # Invalid credentials
-            print("ACCESS TOKEN EXPIRED!")
             access_token = GoogleAuth.get_new_access_token()
             r = requests.get(
                 endpoint, params=params,
@@ -99,6 +98,7 @@ class GoogleAuth:
 
 @bp.route("/google-callback", methods=("GET", "POST"))
 def google_callback():
+    denied = None
     if "code" in request.args:
         # Get tokens with auth code and add access_token to session
         tokens = GoogleAuth.fetch_tokens(request.args["code"])
@@ -117,9 +117,10 @@ def google_callback():
             }
         )
     else:
-        return "Denied consent"
+        denied = True
     
-    return redirect(url_for("calendarview.index"))
+    return redirect(url_for(
+        "calendarview.index", calendar="Google", denied=denied))
 
 
 @bp.route("/connect-to-google", methods=["GET"])
