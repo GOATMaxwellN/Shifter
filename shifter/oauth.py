@@ -8,6 +8,9 @@ from shifter.db import get_db
 from functools import wraps
 
 
+bp = Blueprint("oauth", "shifter", url_prefix="/oauth")
+
+
 class GoogleAuth:
     with current_app.open_instance_resource("google_auth.json", "r") as f:
         google_auth = json.load(f)["web"]
@@ -93,7 +96,7 @@ class GoogleAuth:
         return r.json()["items"]
 
 
-@current_app.route("/oauth/google-callback", methods=("GET", "POST"))
+@bp.route("/google-callback", methods=("GET", "POST"))
 def google_callback():
     denied = None
     if "code" in request.args:
@@ -120,7 +123,7 @@ def google_callback():
         "calendarview.index", calendar="Google", denied=denied))
 
 
-@current_app.route("/oauth/connect-to-google", methods=["GET"])
+@bp.route("/connect-to-google", methods=["GET"])
 def connect_to_google():
 
     return redirect(GoogleAuth.get_auth_url())
@@ -135,7 +138,7 @@ def access_token_required(f):
     return wrapper
 
 
-@current_app.route("/oauth/google-list-events", methods=["GET"])
+@bp.route("/google-list-events", methods=["GET"])
 @access_token_required
 def google_list_events():
     start, end = request.args["timeMin"], request.args["timeMax"]

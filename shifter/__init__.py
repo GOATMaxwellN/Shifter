@@ -18,10 +18,10 @@ def create_app(test_config=None):
     from . import calendar
     app.register_blueprint(calendar.bp)
 
+    from . import db
     with app.app_context():
-        from . import db
         db.init_app()
-        
         from . import oauth  # Need to init classes with app context 
+    app.register_blueprint(oauth.bp)
     
     return app
