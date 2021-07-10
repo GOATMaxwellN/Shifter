@@ -165,7 +165,7 @@ function showShifts(shifts) {
     let shiftsDropdown = document.getElementById("shifts-dropdown-list");
     let html = "";
     for (let s in shifts) {
-        html += `<option value="${s}">${shifts[s]}</option>`;
+        html += `<option value="${s}">${s}</option>`;
     }
     shiftsDropdown.innerHTML = html;
 }

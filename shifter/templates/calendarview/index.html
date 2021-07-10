@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="UTF-8">
         <title>Shifter - Calendar View</title>
         <link rel="stylesheet" href="{{ url_for("static", filename="calendarview/style.css") }}">
-        <script src="{{ url_for("static", filename="calendarview/script.js") }}"></script>
+        <script src="{{ url_for('static', filename='calendarview/script.js') }}"></script>
     </head>
     <body>
         <header>
@@ -37,8 +38,10 @@
                 </div>
             </div>
             <div class="shift-config">
-                <button class="create-shift-btn" type="button">+ Create shift</button>
-                <select name="shift" id="shifts-dropdown-list" class="shifts-dropdown-list">
+                <form action="http://127.0.0.1:5000/calendarview/create-shift" method="get">
+                    <input type="submit" value="+ Create shift" />
+                </form>
+                <select title="Select a shift" name="shift" id="shifts-dropdown-list" class="shifts-dropdown-list">
                     <script>getShifts()</script>
                 </select>
             </div>

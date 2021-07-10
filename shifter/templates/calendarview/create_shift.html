@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Shifter - Create shift</title>
+        <link rel="stylesheet" href="url_for('static', 'create_shift_style.css')">
+    </head>
+    <body>
+        <header><h1>Create shift</h1></header>
+        <form action="http://127.0.0.1:5000/calendarview/create-shift" method="post">
+            <label for="name">Shift name:</label>
+            <input type="text" name="name" id="name">
+
+            <label for="start-time">Start time:</label>
+            <input type="time" name="start-time" id="start-time">
+
+            <label for="end-time">End time:</label>
+            <input type="time" name="end-time" id="end-time">
+
+            <input type="submit" value="Create"/>
+        </form>
+    </body>
+</html>
