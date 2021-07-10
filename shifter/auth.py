@@ -98,6 +98,13 @@ def signup():
     return render_template("auth/signup.html")
 
 
+@bp.route("/logout", methods=["GET"])
+def logout():
+    # Clear everything in the session
+    session.clear()
+    return redirect(url_for("auth.login"))
+
+
 def generate_password_hash(password, salt):
     encoded_pw = password.encode("ascii")
     return scrypt(encoded_pw, salt=salt, n=16384, r=8, p=1)

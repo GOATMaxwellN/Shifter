@@ -9,6 +9,7 @@
         <header>
             <h1>Shifter</h1>
             <p>Hello, {{ username }}</p>
+            <a href="{{ url_for("auth.logout") }}"><button type="button">Logout</button></a>
         </header>
         <section class="content">
             <div class="config-values">config</div>
