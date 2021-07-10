@@ -16,10 +16,6 @@ PASSWORD_VALIDATION_PATTERN = re.compile(r"^(?=.*\d)(?=.*[A-Z])")
 
 @bp.route("/login", methods=("GET", "POST"))
 def login():
-    # This inits fields in the session that will store credential
-    # info to access user calendars. Nothing to do with login.
-    if "credentials" not in session:
-        session["credentials"] = {"google": {}, "outlook": {}}
 
     if request.method == "POST":
         username = request.form["username"]
@@ -36,11 +32,13 @@ def login():
             error = "Username doesn't exist"
         else:
             # If password is correct, add user to the session,
-            # and redirect to calendar view
+            # create 'credentials' field in session, and redirect
+            # to calendar view
             pass_hash = generate_password_hash(password, user["salt"])
             if pass_hash == user["password_hash"]:
                 # ObjectId is not JSON serializable, so convert to str
                 session["user_id"] = str(user["_id"])
+                session["credentials"] = {"google": {}, "outlook": {}}
                 return redirect(url_for("calendarview.index"))
             else:
                 error = "Incorrect password"
