@@ -150,10 +150,28 @@ function dismissErrMsg() {
 
 
 function getShifts() {
-
+    let req = new XMLHttpRequest();
+    req.responseType = "json";
+    req.onload = function () {
+        let shifts = this.response;
+        showShifts(shifts);
+    }
+    req.open("GET", GET_SHIFTS_ENDPOINT);
+    req.send();
 }
 
-const GOOGLE_LIST_EVENTS_ENDPOINT = "http://127.0.0.1:5000/oauth/google-list-events";
+
+function showShifts(shifts) {
+    let shiftsDropdown = document.getElementById("shifts-dropdown-list");
+    let html = "";
+    for (let s in shifts) {
+        html += `<option value="${s}">${shifts[s]}</option>`;
+    }
+    shiftsDropdown.innerHTML = html;
+}
+
+
+const GOOGLE_LIST_EVENTS_ENDPOINT = "http://127.0.0.1:5000/api/google-list-events";
 const GET_SHIFTS_ENDPOINT = "http://127.0.0.1:5000/api/get-shifts";
 const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const OFFSET = getTimeZoneOffset()

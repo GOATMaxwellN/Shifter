@@ -1,5 +1,4 @@
-from flask import Flask, jsonify
-import json
+from flask import Flask
 
 
 def create_app(test_config=None):
@@ -23,5 +22,8 @@ def create_app(test_config=None):
         db.init_app()
         from . import oauth  # Need to init classes with app context 
     app.register_blueprint(oauth.bp)
+
+    from . import api
+    app.register_blueprint(api.bp)
     
     return app

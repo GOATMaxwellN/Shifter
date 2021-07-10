@@ -16,6 +16,11 @@ PASSWORD_VALIDATION_PATTERN = re.compile(r"^(?=.*\d)(?=.*[A-Z])")
 
 @bp.route("/login", methods=("GET", "POST"))
 def login():
+    # This inits fields in the session that will store credential
+    # info to access user calendars. Nothing to do with login.
+    if "credentials" not in session:
+        session["credentials"] = {"google": {}, "outlook": {}}
+
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]

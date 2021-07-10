@@ -1,14 +1,23 @@
 from flask import (
-    Blueprint, current_app, redirect, render_template, request,
-    session, url_for, jsonify)
+    Blueprint, current_app, redirect, request,
+    session, url_for)
 import json
-from shifter.auth import get_logged_in_user_id
+from .auth import get_logged_in_user_id
 import requests
-from shifter.db import get_db
+from .db import get_db
 from functools import wraps
 
 
 bp = Blueprint("oauth", "shifter", url_prefix="/oauth")
+
+
+def access_token_required(f):
+    wraps(f)
+    def wrapper(*args):
+        if "access_token" not in session["credentials"]["google"]:
+            GoogleAuth.get_new_access_token()
+        return f(*args)
+    return wrapper
 
 
 class GoogleAuth:
@@ -74,13 +83,15 @@ class GoogleAuth:
 
         # Update the access token in the session and return
         access_token = r.json()["access_token"]
-        session["access_token"] = access_token
+        session["credentials"]["google"]["access_token"] = access_token
         return access_token
 
     @staticmethod
-    def list_events(access_token, start, end, timezone):
+    @access_token_required
+    def list_events(start, end, timezone):
         endpoint = "https://www.googleapis.com/calendar/v3/calendars/primary/events"
         params=[("timeMin", start), ("timeMax", end), ("timeZone", timezone)]
+        access_token = session['credentials']['google']['access_token']
         r = requests.get(
             endpoint, params=params,
             headers={"Authorization": f"Bearer {access_token}"}
@@ -96,13 +107,19 @@ class GoogleAuth:
         return r.json()["items"]
 
 
+@bp.route("/connect-to-google", methods=["GET"])
+def connect_to_google():
+    return redirect(GoogleAuth.get_auth_url())
+
+
 @bp.route("/google-callback", methods=("GET", "POST"))
 def google_callback():
+    print('='*10, request.method, '='*10)  # TODO: REMOVE THIS
     denied = None
     if "code" in request.args:
         # Get tokens with auth code and add access_token to session
         tokens = GoogleAuth.fetch_tokens(request.args["code"])
-        session["access_token"] = tokens["access_token"]
+        session["credentials"]["google"]["access_token"] = tokens["access_token"]
 
         # User now has connected their google calendar
         # and add user's refresh token to the db
@@ -122,33 +139,5 @@ def google_callback():
     return redirect(url_for(
         "calendarview.index", calendar="Google", denied=denied))
 
-
-@bp.route("/connect-to-google", methods=["GET"])
-def connect_to_google():
-
-    return redirect(GoogleAuth.get_auth_url())
-
-
-def access_token_required(f):
-    wraps(f)
-    def wrapper():
-        if "access_token" not in session:
-            GoogleAuth.get_new_access_token()
-        return f()
-    return wrapper
-
-
-@bp.route("/google-list-events", methods=["GET"])
-@access_token_required
-def google_list_events():
-    start, end = request.args["timeMin"], request.args["timeMax"]
-    timezone = request.args["timeZone"]
-    events = GoogleAuth.list_events(
-        session["access_token"], start, end, timezone
-    )
-
-    resp = jsonify(events)
-    resp.access_control_allow_origin = "*"
-    return resp
 
 # TODO implement outlook
