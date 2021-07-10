@@ -18,7 +18,7 @@ PASSWORD_VALIDATION_PATTERN = re.compile(r"^(?=.*\d)(?=.*[A-Z])")
 def login():
     # If a user is already logged in, redirect to calendar view
     if "user_id" in session:
-        redirect(url_for("calendar.view"))
+        return redirect(url_for("calendarview.index"))
 
     if request.method == "POST":
         username = request.form["username"]
