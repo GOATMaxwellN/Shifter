@@ -33,7 +33,7 @@ header p {
     padding-top: 1rem;
 }
 
-header a {
+header form {
     grid-column: 3 / 4;
     justify-self: end;
     align-self: center;
