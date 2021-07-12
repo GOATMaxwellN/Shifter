@@ -47,36 +47,3 @@ def index():
         calendar=calendar,
         denied=denied
     )
-
-
-@bp.route("/create-shift", methods=("GET", "POST"))
-def create_shift():
-    if request.method == "POST":
-        name = request.form["name"]
-        start_time = request.form["start-time"]
-        end_time = request.form["end-time"]
-
-        db = get_db()
-        db.users.update_one(
-            {"_id": get_logged_in_user_id()},
-            {"$set": 
-                {
-                    f"shifts.{name}": 
-                        {
-                            "start_time": start_time,
-                            "end_time": end_time
-                        }
-                }
-            }
-        )
-
-        # Update the shifts held in session
-        session["shifts"][name] = {
-            "start_time": start_time,
-            "end_time": end_time
-        }
-        session.modified = True
-
-        return redirect(url_for("calendarview.index"))
-
-    return render_template("calendarview/create_shift.html")

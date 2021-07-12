@@ -114,7 +114,6 @@ def connect_to_google():
 
 @bp.route("/google-callback", methods=("GET", "POST"))
 def google_callback():
-    print('='*10, request.method, '='*10)  # TODO: REMOVE THIS
     denied = None
     if "code" in request.args:
         # Get tokens with auth code and add access_token to session

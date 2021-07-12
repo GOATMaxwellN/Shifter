@@ -4,7 +4,7 @@
 function drawCalendar(events) {
     let daysInMonth = getDaysInMonth();
     let firstWeekday = displayedYearAndMonth.getDay();
-    let monthName = displayedYearAndMonth.toLocaleDateString("en-US", {month: 'long'})
+    let monthName = displayedYearAndMonth.toLocaleDateString("en-US", {month: 'long'});
     let calendar = document.getElementsByClassName("calendar")[0];
     let html = `
         <div class="calendar-month">${monthName}</div>
@@ -72,7 +72,7 @@ function startOfMonth() {
     return new Date(
         displayedYearAndMonth.getFullYear(),
         displayedYearAndMonth.getMonth(),
-        1, 
+        1,
         0, 0, 0
     ).toISOString();
 }
@@ -123,7 +123,7 @@ function getTimeZoneOffset() {
     // Insert a 0 in front of hour if hour is single digit
     if (offset < 10 && offset > -10) {
         // Special cases for offsets that have 30 or 45 in their minute field
-        if (Math.abs(offset) % 1 == 0.5) { 
+        if (Math.abs(offset) % 1 == 0.5) {
             return sign + `0${Math.abs(Math.trunc(offset))}:30`;
         } else if (Math.abs(offset) % 1 == 0.75) {
             return sign + `0${Math.abs(Math.trunc(offset))}:45`;
@@ -171,10 +171,49 @@ function showShifts(shifts) {
 }
 
 
+function showCreateShiftView() {
+    document.getElementById("select-shift-view").style.display = "none";
+    document.getElementById("create-shift-view").style.display = "grid";
+}
+
+function hideCreateShiftView() {
+    document.getElementById("create-shift-view").style.display = "none";
+    document.getElementById("select-shift-view").style.display = "grid";
+}
+
+
+function createShift(evt) {
+    evt.preventDefault();
+    let xhr = new XMLHttpRequest();
+    let fd = new FormData(evt.target); // evt.target is the form
+
+    // If successful, remove the create shift view and loading animation
+    // as well as update the shifts dropdown list
+    xhr.onload = function() {
+        loading.style.display = "none";
+        hideCreateShiftView();
+        getShifts();
+    }
+
+    // TODO: do something when unsuccessful
+    xhr.onerror = function () {
+        console.log("Something went wrong");
+    }
+
+    xhr.open("POST", CREATE_SHIFT_ENDPOINT);
+    xhr.send(fd);
+
+    // While waiting for request, show loading animation
+    let loading = document.getElementById("create-shift-loading");
+    loading.style.display = "block";
+}
+
+
 const GOOGLE_LIST_EVENTS_ENDPOINT = "http://127.0.0.1:5000/api/google-list-events";
 const GET_SHIFTS_ENDPOINT = "http://127.0.0.1:5000/api/get-shifts";
+const CREATE_SHIFT_ENDPOINT = "http://127.0.0.1:5000/api/create-shift";
 const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
-const OFFSET = getTimeZoneOffset()
+const OFFSET = getTimeZoneOffset();
 const NAMES_OF_DAYS = `
     <span>Sunday</span>
     <span>Monday</span>

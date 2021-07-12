@@ -64,10 +64,63 @@ header form {
     grid-column: 2 / 3;
     grid-row: 2 / 3;
     background-color: #F5B7B1;
+    font-size: 1rem;
+}
+
+#select-shift-view {
+    width: 100%;
+    height: 100%;
     display: grid;
     grid-template-columns: 1fr;
     grid-auto-flow: row;
     grid-auto-rows: 10%;
+}
+
+#create-shift-view {
+    display: none;
+    margin-top: 2rem;
+    width: 100%;
+    height: calc(100% - 2rem);
+}
+
+#create-shift-view form {
+    width: 100%;
+    height: 100%;
+}
+
+#create-shift-view form label {
+    display: block;
+    text-align: center;
+    font-size: 1.3em;
+}
+
+#create-shift-view form input {
+    display: block;
+    font-size: 1.5em;
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+#create-shift-view form input[type="time"] {
+    width: 60%;
+}
+#create-shift-view form input[type="submit"] {
+    font-size: 1.3em;
+}
+
+#create-shift-loading {
+    display: none;
+    bottom: 3em;
+    text-align: center;
+    font-size: 2em;
+    font-weight: bold;
+    animation: fade-out-fade-in 1s alternate infinite;
+}
+@keyframes fade-out-fade-in {
+    from {opacity: 0;}
+    to {opacity: 100;}
 }
 
 .calendar {
