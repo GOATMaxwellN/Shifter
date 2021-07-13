@@ -4,7 +4,7 @@
 function drawCalendar(events) {
     let daysInMonth = getDaysInMonth();
     let firstWeekday = displayedYearAndMonth.getDay();
-    let monthName = displayedYearAndMonth.toLocaleDateString("en-US", {month: 'long'});
+    let monthName = displayedYearAndMonth.toLocaleDateString("en-US", { month: 'long' });
     let calendar = document.getElementsByClassName("calendar")[0];
     let html = `
         <div class="calendar-month">${monthName}</div>
@@ -20,7 +20,7 @@ function drawCalendar(events) {
     }
     calendar.innerHTML = html;
     // Populate the date boxes with events in them
-    events.forEach(function(v, i, a) {
+    events.forEach(function (v, i, a) {
         let start;
         let dateBox;
         if ("dateTime" in v["start"]) {
@@ -90,26 +90,21 @@ function endOfMonth() {
 
 function getDaysInMonth() {
     return new Date(
-        displayedYearAndMonth.getFullYear(), 
+        displayedYearAndMonth.getFullYear(),
         displayedYearAndMonth.getMonth() + 1, 0
     ).getDate();
-}
-
-
-function connectToGoogle() {
-    window.location.href = "http://127.0.0.1:5000/oauth/connect-to-google";
 }
 
 
 function googleListEvents(min, max) {
     let req = new XMLHttpRequest();
     req.responseType = "json";
-    req.onload = function() {
+    req.onload = function () {
         let events = this.response;
         drawCalendar(events);
     }
     let url = GOOGLE_LIST_EVENTS_ENDPOINT
-              + `?timeMin=${min}&timeMax=${max}&timeZone=${TIMEZONE}`;
+        + `?timeMin=${min}&timeMax=${max}&timeZone=${TIMEZONE}`;
     req.open("GET", url);
     req.send();
 }
@@ -141,79 +136,7 @@ function getTimeZoneOffset() {
 }
 
 
-function dismissErrMsg() {
-    let err = document.getElementById("error");
-    let connect_btns = document.getElementById("connect-btns-wrapper");
-    err.remove();
-    connect_btns.style.display = "block";
-}
-
-
-function getShifts() {
-    let req = new XMLHttpRequest();
-    req.responseType = "json";
-    req.onload = function () {
-        let shifts = this.response;
-        showShifts(shifts);
-    }
-    req.open("GET", GET_SHIFTS_ENDPOINT);
-    req.send();
-}
-
-
-function showShifts(shifts) {
-    let shiftsDropdown = document.getElementById("shifts-dropdown-list");
-    let html = "";
-    for (let s in shifts) {
-        html += `<option value="${s}">${s}</option>`;
-    }
-    shiftsDropdown.innerHTML = html;
-}
-
-
-function showCreateShiftView() {
-    document.getElementById("select-shift-view").style.display = "none";
-    document.getElementById("create-shift-view").style.display = "grid";
-}
-
-function hideCreateShiftView() {
-    document.getElementById("create-shift-view").style.display = "none";
-    document.getElementById("select-shift-view").style.display = "grid";
-}
-
-
-function createShift(evt) {
-    evt.preventDefault();
-    
-    let xhr = new XMLHttpRequest();
-    let fd = new FormData(evt.target); // evt.target is the form
-
-    // If successful, remove the create shift view and loading
-    // animation as well as update the shifts dropdown list
-    xhr.onload = function() {
-        loading.style.display = "none";
-        hideCreateShiftView();
-        getShifts();
-    }
-
-    xhr.onerror = function () {
-        error.style.display = "block";
-        error.style.animation = "disappear 1s 1";
-    }
-
-    xhr.open("POST", CREATE_SHIFT_ENDPOINT);
-    xhr.send(fd);
-    evt.target.reset() // Clear the form after sending request
-
-    // While waiting for request, show loading animation
-    let [loading, error] = document.querySelectorAll("#create-shift-status span");
-    loading.style.display = "block";
-}
-
-
 const GOOGLE_LIST_EVENTS_ENDPOINT = "http://127.0.0.1:5000/api/google-list-events";
-const GET_SHIFTS_ENDPOINT = "http://127.0.0.1:5000/api/get-shifts";
-const CREATE_SHIFT_ENDPOINT = "http://127.0.0.1:5000/api/create-shift";
 const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const OFFSET = getTimeZoneOffset();
 const NAMES_OF_DAYS = `
