@@ -184,27 +184,29 @@ function hideCreateShiftView() {
 
 function createShift(evt) {
     evt.preventDefault();
+    
     let xhr = new XMLHttpRequest();
     let fd = new FormData(evt.target); // evt.target is the form
 
-    // If successful, remove the create shift view and loading animation
-    // as well as update the shifts dropdown list
+    // If successful, remove the create shift view and loading
+    // animation as well as update the shifts dropdown list
     xhr.onload = function() {
         loading.style.display = "none";
         hideCreateShiftView();
         getShifts();
     }
 
-    // TODO: do something when unsuccessful
     xhr.onerror = function () {
-        console.log("Something went wrong");
+        error.style.display = "block";
+        error.style.animation = "disappear 1s 1";
     }
 
     xhr.open("POST", CREATE_SHIFT_ENDPOINT);
     xhr.send(fd);
+    evt.target.reset() // Clear the form after sending request
 
     // While waiting for request, show loading animation
-    let loading = document.getElementById("create-shift-loading");
+    let [loading, error] = document.querySelectorAll("#create-shift-status span");
     loading.style.display = "block";
 }
 

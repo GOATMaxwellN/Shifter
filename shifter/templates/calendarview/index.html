@@ -55,10 +55,13 @@
                         <label for="end-time">End time:</label>
                         <input type="time" name="end-time" id="end-time">
                         
-                        <input type="submit" onclick="createShift()" value="Create" />
-                    </form>
-                    <script>document.getElementById("create-shift-form").addEventListener("submit", createShift)</script>
-                    <div id="create-shift-loading">Creating...</div>
+                        <input type="submit" value="Create" />
+                    </form><script>document.getElementById("create-shift-form").addEventListener("submit", createShift)</script>
+                    <button class="create-shift-go-back-btn" type="button" onclick="hideCreateShiftView()">Go back</button>
+                    <div id="create-shift-status">
+                        <span class="loading">Creating...</span>
+                        <span class="error">Couldn't create the Shift</span>
+                    </div>
                 </div>
             </div>
         </section>

@@ -81,11 +81,13 @@ header form {
     margin-top: 2rem;
     width: 100%;
     height: calc(100% - 2rem);
+    grid-template-columns: 1fr;
+    grid-template-rows: 7fr 1.2em 3fr
 }
 
 #create-shift-view form {
     width: 100%;
-    height: 100%;
+    grid-row: 1 / 2;
 }
 
 #create-shift-view form label {
@@ -108,19 +110,43 @@ header form {
 }
 #create-shift-view form input[type="submit"] {
     font-size: 1.3em;
+    height: 1.8em;
 }
 
-#create-shift-loading {
-    display: none;
-    bottom: 3em;
+.create-shift-go-back-btn {
+    width: 90%;
+    grid-row: 2 / 3;
+    font-size: 1em;
+    height: 1.2em;
+    background-color: red;
+    margin: 0 auto;
+}
+
+#create-shift-status {
+    display: block;
+    grid-row: 3 / 4;
     text-align: center;
     font-size: 2em;
     font-weight: bold;
+}
+#create-shift-status .loading {
+    display: none;
+    margin: auto 0;
     animation: fade-out-fade-in 1s alternate infinite;
+}
+#create-shift-status .error {
+    display: none;
+    margin: auto 0;
+    color: red;
+    animation: none;  /* Will be added in JS */
 }
 @keyframes fade-out-fade-in {
     from {opacity: 0;}
     to {opacity: 100;}
+}
+@keyframes disappear {
+    from {display: block;}
+    to {display: none;}
 }
 
 .calendar {
