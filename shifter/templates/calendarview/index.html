@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <title>Shifter - Calendar View</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='calendarview/style.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='icons/fontello-41e04f2b/css/animation.css') }}">
         <script src="{{ url_for('static', filename='calendarview/calendarAuth.js') }}"></script>
         <script src="{{ url_for('static', filename='calendarview/calendar.js') }}"></script>
         <script src="{{ url_for('static', filename='calendarview/shifts.js') }}"></script>
@@ -20,31 +21,32 @@
             <div class="config-values">config</div>
             <div class="calendar-wrapper">
                 <div class="calendar">
-                    <!-- User tried to connect a calendar and it failed (usually because they denied consent) -->
-                    {% if denied != None %}
-                    <div id="connect-btns-wrapper" class="connect-btns-wrapper" style="display:none;">
-                        <button class="calendar-connect-btn google" type="button" onclick="connectToGoogle()">Connect To Google Calendar</button>
-                        <button class="calendar-connect-btn outlook" type="button">Connect To Outlook Calendar</button>
-                    </div>
-                    <span id="error" onclick="dismissErrMsg()">Could not connect to calendar. Click to dismiss.</span>
                     <!-- Display user's Google calendar -->
-                    {% elif calendar == "Google" %}
-                    <script>googleListEvents(startOfMonth(), endOfMonth());</script>
+                    {% if calendar != None %}
+                        {% if calendar == "Google" %}
+                        <script>document.querySelector("calendar").setAttribute("id", "google")</script>
+                        <!--<script>googleListEvents(startOfMonth(), endOfMonth());</script>-->
+                        {% elif calendar == "Outlook" %}
+                        <script>document.querySelector("calendar").setAttribute("id", "outlook")</script>
+                        {% endif %}
                     {% else %}
                     <!-- User has no calendar, so these buttons are links to connect to supported calendars -->
                     <div class="connect-btns-wrapper">
-                        <button class="calendar-connect-btn google" type="button" onclick="connectToGoogle()">Connect To Google Calendar</button>
-                        <button class="calendar-connect-btn outlook" type="button">Connect To Outlook Calendar</button>
+                        <button class="calendar-connect-btn google-btn" type="button">Connect To Google Calendar</button>
+                        <button class="calendar-connect-btn outlook-btn" type="button">Connect To Outlook Calendar</button>
                     </div>
+                    {% if denied != None %}<span id="error">Could not connect to calendar. Click to dismiss.</span>{% endif %}
                     {% endif %}
                 </div>
             </div>
             <div class="shift-config">
                 <div id="select-shift-view">
-                    <button class="create-shift-btn" onclick="showCreateShiftView()">+ Create shift</button>
-                    <select title="Select a shift" name="shift" id="shifts-dropdown-list" class="shifts-dropdown-list">
-                        <script>getShifts()</script>
-                    </select>
+                    <button class="create-shift-btn" onclick="showCreateShiftView()">+ Create a Shift</button>
+                    <div class="custom-shift-select">
+                        <select title="Select a shift" name="shift" id="shifts-dropdown-list" class="shifts-dropdown-list">
+
+                        </select>
+                    </div>
                 </div>
                 <div id="create-shift-view">
                     <form id="create-shift-form">
