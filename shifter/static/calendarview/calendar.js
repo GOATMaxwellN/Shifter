@@ -1,7 +1,11 @@
 "use strict";
 
 
-window.addEventListener("DOMContentLoaded", getConnectedCalendar)
+if (document.readyState !== "loading") {
+    getConnectedCalendar();
+} else {
+    window.addEventListener("DOMContentLoaded", getConnectedCalendar);
+}
 
 
 function getConnectedCalendar() {

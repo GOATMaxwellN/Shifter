@@ -2,9 +2,9 @@
     font-family: 'fontello';
     src: url('./../icons/fontello-41e04f2b/font/fontello.eot?63653546');
     src: url('./../icons/fontello-41e04f2b/font/fontello.eot?63653546#iefix') format('embedded-opentype'),
-        url('./../icons/fontello-41e04f2b/font/fontello.woff?63653546') format('woff'),
-        url('./../icons/fontello-41e04f2b/font/fontello.ttf?63653546') format('truetype'),
-        url('./../icons/fontello-41e04f2b/font/fontello.svg?63653546#fontello') format('svg');
+         url('./../icons/fontello-41e04f2b/font/fontello.woff?63653546') format('woff'),
+         url('./../icons/fontello-41e04f2b/font/fontello.ttf?63653546') format('truetype'),
+         url('./../icons/fontello-41e04f2b/font/fontello.svg?63653546#fontello') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -102,6 +102,10 @@ header form {
     background-color: rgb(205, 97, 85)
 }
 
+.select-hide {
+    display: none;
+}
+
 .custom-shift-select .select-options {
     grid-row: 2 / 3;
     color:rgb(240, 243, 244);
@@ -118,8 +122,8 @@ header form {
     background-color: red;
 }
 
-.icon-trash-empty {
-    font-family: fontello;
+.custom-shift-select .select-options div button {
+    font-family: "fontello";
     color: red;
 }
 

@@ -5,9 +5,9 @@
         <title>Shifter - Calendar View</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='calendarview/style.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='icons/fontello-41e04f2b/css/animation.css') }}">
-        <script src="{{ url_for('static', filename='calendarview/calendarAuth.js') }}"></script>
-        <script src="{{ url_for('static', filename='calendarview/calendar.js') }}"></script>
-        <script src="{{ url_for('static', filename='calendarview/shifts.js') }}"></script>
+        <script src="{{ url_for('static', filename='calendarview/calendarAuth.js') }}" async></script>
+        <script src="{{ url_for('static', filename='calendarview/calendar.js') }}" async></script>
+        <script src="{{ url_for('static', filename='calendarview/shifts.js') }}" async></script>
     </head>
     <body>
         <header>
@@ -25,7 +25,6 @@
                     {% if calendar != None %}
                         {% if calendar == "Google" %}
                         <script>document.querySelector(".calendar").setAttribute("id", "google")</script>
-                        <!--<script>googleListEvents(startOfMonth(), endOfMonth());</script>-->
                         {% elif calendar == "Outlook" %}
                         <script>document.querySelector(".calendar").setAttribute("id", "outlook")</script>
                         {% endif %}
@@ -41,7 +40,7 @@
             </div>
             <div class="shift-config">
                 <div id="select-shift-view">
-                    <button class="create-shift-btn" onclick="showCreateShiftView()">+ Create a Shift</button>
+                    <button class="create-shift-btn">+ Create a Shift</button>
                     <div class="custom-shift-select">
                         <select title="Select a shift" name="shift" id="shifts-dropdown-list" class="shifts-dropdown-list">
 
@@ -60,7 +59,7 @@
                         <input type="time" name="end-time" id="end-time">
                         
                         <input type="submit" value="Create" />
-                    </form><script>document.getElementById("create-shift-form").addEventListener("submit", createShift)</script>
+                    </form>
                     <button class="create-shift-go-back-btn" type="button" onclick="hideCreateShiftView()">Go back</button>
                     <div id="create-shift-status">
                         <span class="loading">Creating...</span>
