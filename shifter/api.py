@@ -1,5 +1,6 @@
 from shifter.auth import get_logged_in_user_id
 from flask import Blueprint, request, jsonify, session, render_template, url_for
+from .auth import get_logged_in_user_id
 from .oauth import GoogleAuth
 from .db import get_db
 
@@ -39,7 +40,7 @@ def get_shifts():
 
 @bp.route("/create-shift", methods=("POST",))
 def create_shift():
-    name = request.form["name"]
+    shift_name = request.form["name"]
     start_time = request.form["start-time"]
     end_time = request.form["end-time"]
 
@@ -48,7 +49,7 @@ def create_shift():
         {"_id": get_logged_in_user_id()},
         {"$set": 
             {
-                f"shifts.{name}": 
+                f"shifts.{shift_name}": 
                     {
                         "start_time": start_time,
                         "end_time": end_time
@@ -58,10 +59,30 @@ def create_shift():
     )
 
     # Update the shifts held in session
-    session["shifts"][name] = {
+    session["shifts"][shift_name] = {
         "start_time": start_time,
         "end_time": end_time
     }
     session.modified = True
 
     return {"created": True}
+
+
+@bp.route("/delete-shift", methods=("DELETE",))
+def delete_shift():
+    shift_name = request.args["shift_name"]
+
+    # Deletes the shift from user db
+    db = get_db()
+    db.users.update_one(
+        {"_id": get_logged_in_user_id()},
+        {"$unset":
+            {
+                f"shifts.{shift_name}": ""
+            }
+        }
+    )
+    # Deletes the shift from sessions
+    del session["shifts"][shift_name]
+
+    return "Success", 200
