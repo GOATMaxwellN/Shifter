@@ -1,11 +1,11 @@
 from flask import (
-    Blueprint, render_template, request, session, redirect, url_for)
+    Blueprint, render_template, request, session)
 from shifter.auth import get_logged_in_user_id, login_required
 from shifter.db import get_db
 
 
 bp = Blueprint("calendarview", "shifter", url_prefix="/calendarview")
-INDEX_PAGE = "calendarview/index.html"
+
 
 @bp.route("/index", methods=("GET",))
 @login_required

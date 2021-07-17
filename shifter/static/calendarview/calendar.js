@@ -5,10 +5,10 @@ window.addEventListener("DOMContentLoaded", getConnectedCalendar)
 
 
 function getConnectedCalendar() {
-    let cal = document.querySelector("calendar").getAttribute("id");
-    if (cal === "Google") {
+    let cal = document.querySelector(".calendar").getAttribute("id");
+    if (cal === "google") {
         googleListEvents(startOfMonth(), endOfMonth());
-    } else if (cal === "Outlook") {
+    } else if (cal === "outlook") {
         // TODO: something for outlook
     }
 }   
@@ -148,3 +148,19 @@ function getTimeZoneOffset() {
     return sign + `${Math.abs(offset)}:00`;
 }
 
+
+const GOOGLE_LIST_EVENTS_ENDPOINT = "http://127.0.0.1:5000/api/google-list-events";
+const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
+const OFFSET = getTimeZoneOffset();
+const NAMES_OF_DAYS = `
+    <span>Sunday</span>
+    <span>Monday</span>
+    <span>Tuesday</span>
+    <span>Wednesday</span>
+    <span>Thursday</span>
+    <span>Friday</span>
+    <span>Saturday</span>
+`;
+
+let displayedYearAndMonth = new Date();
+displayedYearAndMonth.setDate(1);

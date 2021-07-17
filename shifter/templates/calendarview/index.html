@@ -24,10 +24,10 @@
                     <!-- Display user's Google calendar -->
                     {% if calendar != None %}
                         {% if calendar == "Google" %}
-                        <script>document.querySelector("calendar").setAttribute("id", "google")</script>
+                        <script>document.querySelector(".calendar").setAttribute("id", "google")</script>
                         <!--<script>googleListEvents(startOfMonth(), endOfMonth());</script>-->
                         {% elif calendar == "Outlook" %}
-                        <script>document.querySelector("calendar").setAttribute("id", "outlook")</script>
+                        <script>document.querySelector(".calendar").setAttribute("id", "outlook")</script>
                         {% endif %}
                     {% else %}
                     <!-- User has no calendar, so these buttons are links to connect to supported calendars -->
