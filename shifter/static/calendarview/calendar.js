@@ -18,12 +18,7 @@ const NAMES_OF_DAYS = `
 let displayedYearAndMonth = new Date();
 displayedYearAndMonth.setDate(1);
 
-// === Event listeners
-if (document.readyState !== "loading") {
-    getConnectedCalendar();
-} else {
-    window.addEventListener("DOMContentLoaded", getConnectedCalendar);
-}
+getConnectedCalendar();
 
 
 function getConnectedCalendar() {

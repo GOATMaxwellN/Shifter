@@ -5,15 +5,11 @@ const GET_SHIFTS_ENDPOINT = "http://127.0.0.1:5000/api/get-shifts";
 const CREATE_SHIFT_ENDPOINT = "http://127.0.0.1:5000/api/create-shift";
 const DELETE_SHIFT_ENDPOINT = "http://127.0.0.1:5000/api/delete-shift";
 
-if (document.readyState !== "loading") {
-    getShifts();
-} else {
-    window.addEventListener("DOMContentLoaded", getShifts);
-}
 document.addEventListener("click", closeSelect);
 document.querySelector(".create-shift-btn").addEventListener("click", showCreateShiftView);
 document.querySelector("#create-shift-form").addEventListener("submit", createShift);
 
+getShifts();
 
 
 function showCreateShiftView() {
@@ -115,6 +111,8 @@ function updateSelElmnt(e) {
 
 
 function deleteShift(e, index) {
+    alert(this.previousElementSibling.innerHTML); return;
+
     let shiftName, opt, ogSel;
     shiftName = this.previousElementSibling.innerHTML;
     opt = this.parentElement;
