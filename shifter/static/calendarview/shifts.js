@@ -144,6 +144,7 @@ function deleteShift(e) {
     ogSel = document.querySelector(".custom-shift-select select");
     selOpt = ogSel.namedItem(shiftName);
     cusOpt = this.parentElement;
+    cusOpt.style.animation = "deleting-shift 0.3s alternate infinite";
 
     // Make request to delete shift
     let xhr = new XMLHttpRequest();
@@ -158,6 +159,10 @@ function deleteShift(e) {
             let selElmnt = selOpt.parentElement.previousElementSibling;
             selElmnt.innerHTML = ogSel.options[0].innerHTML;
         }
+    }
+
+    xhr.onerror = function() {
+        cusOpt.style.animation = none;
     }
 
     xhr.open("DELETE", url);
