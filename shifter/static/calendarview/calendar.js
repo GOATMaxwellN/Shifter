@@ -1,6 +1,24 @@
 "use strict";
 
 
+// === Constants
+const GOOGLE_LIST_EVENTS_ENDPOINT = "http://127.0.0.1:5000/api/google-list-events";
+const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
+const OFFSET = getTimeZoneOffset();
+const NAMES_OF_DAYS = `
+    <span>Sunday</span>
+    <span>Monday</span>
+    <span>Tuesday</span>
+    <span>Wednesday</span>
+    <span>Thursday</span>
+    <span>Friday</span>
+    <span>Saturday</span>
+`;
+
+let displayedYearAndMonth = new Date();
+displayedYearAndMonth.setDate(1);
+
+// === Event listeners
 if (document.readyState !== "loading") {
     getConnectedCalendar();
 } else {
@@ -152,19 +170,3 @@ function getTimeZoneOffset() {
     return sign + `${Math.abs(offset)}:00`;
 }
 
-
-const GOOGLE_LIST_EVENTS_ENDPOINT = "http://127.0.0.1:5000/api/google-list-events";
-const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
-const OFFSET = getTimeZoneOffset();
-const NAMES_OF_DAYS = `
-    <span>Sunday</span>
-    <span>Monday</span>
-    <span>Tuesday</span>
-    <span>Wednesday</span>
-    <span>Thursday</span>
-    <span>Friday</span>
-    <span>Saturday</span>
-`;
-
-let displayedYearAndMonth = new Date();
-displayedYearAndMonth.setDate(1);

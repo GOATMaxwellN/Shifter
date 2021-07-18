@@ -66,7 +66,7 @@ function drawCustomShiftSelect() {
     opts = document.createElement("DIV");
     opts.classList.add("select-options");
     opts.classList.add("select-hide");
-    for (let i = 0; i < ogSel.length; i++) {
+    for (let i = 1; i < ogSel.length; i++) {
         let opt, p, delBtn;
         opt = document.createElement("DIV");
         opt.setAttribute("class", "select-option");
@@ -95,25 +95,22 @@ function drawCustomShiftSelect() {
 
 function updateSelElmnt(e) {
     // If this bubbled up from delete btn, return
-    if (e.target !== this) { return; }
+    if (e.target.classList.contains("trash-icon-empty")) { return; }
 
-    let opt, selElmnt;
+    let selElmnt, optsList;
     selElmnt = document.querySelector(".custom-shift-select .select-selected");
-    opt = e.target;
+    selElmnt.innerHTML = this.firstElementChild.innerHTML;
+    optsList = this.parentElement.children;
 
-    selElmnt.innerHTML = opt.firstElementChild.innerHTML;
-    let optsDiv, optsList;
-    optsDiv = this.parentElement;
-    optsList = optsDiv.children;
     // Undarkens the previous selected element in the options list
     for (let i = 0; i < optsList.length; i++) {
         if (optsList[i].classList.contains("select-selected-option")) {
-            optsList[i].classList.remove("select-selected-options");
+            optsList[i].classList.remove("select-selected-option");
             break;
         }
     }
     // Darkens the new selected element
-    opt.classList.add("select-selected-option");
+    this.classList.add("select-selected-option");
 }
 
 

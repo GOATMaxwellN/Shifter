@@ -1,7 +1,6 @@
 "use strict";
 
 
-
 // If user has no calendar, this wrapper exists
 if (document.querySelector(".connect-btns-wrapper")) {
     // Links connect buttons to their respective auth workflow
