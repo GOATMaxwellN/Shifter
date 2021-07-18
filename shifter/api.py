@@ -24,6 +24,7 @@ def google_list_events():
 @bp.route("/get-shifts", methods=["GET"])
 def get_shifts():
     if "shifts" in session:
+        print(session)
         resp = jsonify(session["shifts"])
         resp.access_control_allow_origin = "*"
         return resp
@@ -65,7 +66,7 @@ def create_shift():
     }
     session.modified = True
 
-    return {"created": True}
+    return {"shift_name": shift_name}, 200
 
 
 @bp.route("/delete-shift", methods=("DELETE",))
@@ -84,5 +85,6 @@ def delete_shift():
     )
     # Deletes the shift from sessions
     del session["shifts"][shift_name]
+    session.modified = True
 
     return "Success", 200

@@ -29,21 +29,43 @@ function getShifts(e) {
     req.responseType = "json";
     req.onload = function () {
         let shifts = this.response;
-        addShiftsToSelect(shifts);
+        addShiftsToSelect(shifts, true);
     }
     req.open("GET", GET_SHIFTS_ENDPOINT);
     req.send();
 }
 
 
-function addShiftsToSelect(shifts) {
+function addShiftsToSelect(shifts, init=false) {
     let shiftsSelect = document.getElementById("shifts-dropdown-list");
-    let html = "<option value='-1'>Select a Shift:</option>";
-    for (let s in shifts) {
-        html += `<option value="${s}">${s}</option>`;
+    if (init) {
+        shiftsSelect.add(createOption("Select a Shift:"), true);
+        for (let s in shifts) {
+            shiftsSelect.add(createOption(s));
+        }
+        drawCustomShiftSelect();
+    } else {
+        // If init=false, shifts is just one shift and a string
+        shiftsSelect.add(createOption(shifts));
+        // Add it to the custom select as well
+        document.querySelector(".custom-shift-select .select-options")
+            .appendChild(createCustomOption(shifts));
     }
-    shiftsSelect.innerHTML = html;
-    drawCustomShiftSelect();
+}
+
+
+function createOption(name, def=false) {
+    let opt = document.createElement("OPTION");
+    opt.innerHTML = name;
+    opt.setAttribute("name", name);
+    opt.setAttribute("id", name);
+    // default option gets a value of -1
+    if (!def) {
+        opt.setAttribute("value", name);
+    } else {
+        opt.setAttribute("value", -1);
+    }
+    return opt;
 }
 
 
@@ -63,20 +85,7 @@ function drawCustomShiftSelect() {
     opts.classList.add("select-options");
     opts.classList.add("select-hide");
     for (let i = 1; i < ogSel.length; i++) {
-        let opt, p, delBtn;
-        opt = document.createElement("DIV");
-        opt.setAttribute("class", "select-option");
-        opt.addEventListener("click", updateSelElmnt)
-
-        p = document.createElement("P");
-        p.innerHTML = ogSel.options[i].innerHTML;
-
-        delBtn = document.createElement("BUTTON");
-        delBtn.innerHTML = "&#xe800;"
-        delBtn.setAttribute("class", "trash-icon-empty");
-        delBtn.addEventListener("click", e => deleteShift(e, i));
-
-        opt.appendChild(p); opt.appendChild(delBtn);
+        let opt = createCustomOption(ogSel.options[i].innerHTML);
         opts.appendChild(opt);
     }
     selCont.appendChild(opts);
@@ -89,9 +98,28 @@ function drawCustomShiftSelect() {
 }
 
 
+function createCustomOption(name) {
+    let opt, p, delBtn;
+    opt = document.createElement("DIV");
+    opt.setAttribute("class", "select-option");
+    opt.addEventListener("click", updateSelElmnt)
+
+    p = document.createElement("P");
+    p.innerHTML = name;
+
+    delBtn = document.createElement("BUTTON");
+    delBtn.innerHTML = "&#xe800;"
+    delBtn.setAttribute("class", "icon-trash-empty");
+    delBtn.addEventListener("click", deleteShift);
+
+    opt.appendChild(p); opt.appendChild(delBtn);
+    return opt;
+}
+
+
 function updateSelElmnt(e) {
     // If this bubbled up from delete btn, return
-    if (e.target.classList.contains("trash-icon-empty")) { return; }
+    if (e.target.classList.contains("icon-trash-empty")) { return; }
 
     let selElmnt, optsList;
     selElmnt = document.querySelector(".custom-shift-select .select-selected");
@@ -110,13 +138,12 @@ function updateSelElmnt(e) {
 }
 
 
-function deleteShift(e, index) {
-    alert(this.previousElementSibling.innerHTML); return;
-
-    let shiftName, opt, ogSel;
+function deleteShift(e) {
+    let shiftName, ogSel, selOpt, cusOpt;
     shiftName = this.previousElementSibling.innerHTML;
-    opt = this.parentElement;
-    ogSel = document.querySelector(".custom-shift-select select"); 
+    ogSel = document.querySelector(".custom-shift-select select");
+    selOpt = ogSel.namedItem(shiftName);
+    cusOpt = this.parentElement;
 
     // Make request to delete shift
     let xhr = new XMLHttpRequest();
@@ -125,8 +152,12 @@ function deleteShift(e, index) {
 
     xhr.onload = function() {
         // If successful, remove element from custom select and original select
-        opt.remove();
-        ogSel.remove(index);
+        cusOpt.remove();
+        ogSel.remove(selOpt.index);
+        if (selOpt.classList.contains("select-selected-option")) {
+            let selElmnt = selOpt.parentElement.previousElementSibling;
+            selElmnt.innerHTML = ogSel.options[0].innerHTML;
+        }
     }
 
     xhr.open("DELETE", url);
@@ -150,6 +181,7 @@ function createShift(evt) {
     evt.preventDefault();
 
     let xhr = new XMLHttpRequest();
+    xhr.responseType = "json";
     let fd = new FormData(evt.target); // evt.target is the form
 
     // If successful, remove the create shift view and loading
@@ -157,7 +189,7 @@ function createShift(evt) {
     xhr.onload = function () {
         loading.style.display = "none";
         hideCreateShiftView();
-        getShifts();
+        addShiftsToSelect(this.response["shift_name"]);
     }
 
     xhr.onerror = function () {
