@@ -155,9 +155,10 @@ function deleteShift(e) {
         // If successful, remove element from custom select and original select
         cusOpt.remove();
         ogSel.remove(selOpt.index);
-        if (selOpt.classList.contains("select-selected-option")) {
-            let selElmnt = selOpt.parentElement.previousElementSibling;
-            selElmnt.innerHTML = ogSel.options[0].innerHTML;
+        if (cusOpt.classList.contains("select-selected-option")) {
+            ogSel.selectedIndex = 0;
+            document.querySelector(".custom-shift-select .select-selected")
+                .innerHTML = "Select a Shift:";
         }
     }
 
