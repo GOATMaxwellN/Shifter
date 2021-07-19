@@ -179,8 +179,10 @@ function closeSelect(e) {
         return;
     }
 
-    let sel = document.querySelector(".custom-shift-select .select-options");
-    sel.classList.add("select-hide");
+    document.querySelector(".custom-shift-select .select-options")
+        .classList.add("select-hide");
+    document.querySelector(".custom-shift-select .select-selected")
+        .classList.remove("select-arrow-active");
 }
 
 
