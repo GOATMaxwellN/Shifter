@@ -9,6 +9,10 @@ document.addEventListener("click", closeSelect);
 document.querySelector(".create-shift-btn").addEventListener("click", showCreateShiftView);
 document.querySelector("#create-shift-form").addEventListener("submit", createShift);
 
+for (let date in document.querySelectorAll(".calendar-date")) {
+    date.addEventListener("click", addShiftToCalendar);
+}
+
 getShifts();
 
 
@@ -119,23 +123,23 @@ function createCustomOption(name) {
 
 
 function updateSelElmnt(e) {
-    // If this bubbled up from delete btn, return
+    // If this bubbled up from delete btn, don't do anything
     if (e.target.classList.contains("icon-trash-empty")) { return; }
 
-    let selElmnt, optsList;
+    let selElmnt, optsList, ogSel;
     selElmnt = document.querySelector(".custom-shift-select .select-selected");
     selElmnt.innerHTML = this.firstElementChild.innerHTML;
+
     optsList = this.parentElement.children;
+    ogSel = document.querySelector(".custom-shift-select select");
 
     // Undarkens the previous selected element in the options list
-    for (let i = 0; i < optsList.length; i++) {
-        if (optsList[i].classList.contains("select-selected-option")) {
-            optsList[i].classList.remove("select-selected-option");
-            break;
-        }
-    }
-    // Darkens the new selected element
+    let prevSel = optsList.querySelector(".select-selected-option");
+    prevSel.classList.remove(".select-selected-option");
+
+    // Darkens the new selected element, and select it in the underlying select
     this.classList.add("select-selected-option");
+    ogSel.selectedIndex = ogSel.namedItem(this.firstElementChild.innerHTML).index;
 }
 
 
@@ -214,3 +218,8 @@ function createShift(evt) {
     let [loading, error] = document.querySelectorAll("#create-shift-status span");
     loading.style.display = "block";
 }
+
+
+function addShiftToCalendar(e) {
+
+} 
