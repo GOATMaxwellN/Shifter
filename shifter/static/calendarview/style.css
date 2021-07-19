@@ -93,7 +93,7 @@ header form {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 9fr;
-    color: rgb(240, 243, 244)
+    color: rgb(240, 243, 244);
 }
 
 .custom-shift-select select {
@@ -104,6 +104,7 @@ header form {
     grid-row: 1 / 2;
     background-color: rgb(205, 97, 85);
     position: relative;
+    cursor: pointer;
 }
 
 .custom-shift-select .select-selected::after {
@@ -136,12 +137,19 @@ header form {
     grid-template-columns: 4fr 1fr;
     grid-template-rows: 1fr;
 }
+.custom-shift-select .select-options div:hover {
+    background-color: rgb(190, 91, 80);
+}
 .custom-shift-select .select-options .select-selected-option {
     background-color: red;
 }
 
 .custom-shift-select .select-options div button {
     font-family: "fontello";
+    color: black;
+    background-color: transparent;
+}
+.custom-shift-select .select-options div button:hover {
     color: red;
 }
 
