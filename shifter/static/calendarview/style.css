@@ -102,7 +102,22 @@ header form {
 
 .custom-shift-select .select-selected {
     grid-row: 1 / 2;
-    background-color: rgb(205, 97, 85)
+    background-color: rgb(205, 97, 85);
+    position: relative;
+}
+
+.custom-shift-select .select-selected::after {
+    position: absolute;
+    content: "";
+    top: 1em;
+    right: 1em;
+    border: 6px solid;
+    border-color: #fff transparent transparent transparent;
+}
+
+.custom-shift-select .select-selected.select-arrow-active::after {
+    top: 0.5em;  /* To minimize arrow movement when switiching */
+    border-color: transparent transparent #fff transparent;
 }
 
 .select-hide {

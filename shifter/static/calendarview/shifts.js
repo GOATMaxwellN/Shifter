@@ -92,8 +92,9 @@ function drawCustomShiftSelect() {
 
     // Show/Hide opts when selElmnt is clicked
     selElmnt.addEventListener("click", function() {
-        let opts = document.querySelector(".custom-shift-select .select-options");
-        opts.classList.toggle("select-hide");
+        document.querySelector(".custom-shift-select .select-options")
+            .classList.toggle("select-hide");
+        this.classList.toggle("select-arrow-active");
     });
 }
 
