@@ -122,6 +122,7 @@ function createCustomOption(name) {
     delBtn = document.createElement("BUTTON");
     delBtn.innerHTML = "&#xe800;"
     delBtn.setAttribute("class", "icon-trash-empty");
+    delBtn.setAttribute("data-shift", name);
     delBtn.addEventListener("click", deleteShift);
 
     opt.appendChild(p); opt.appendChild(delBtn);
@@ -152,7 +153,7 @@ function updateSelElmnt(e) {
 
 function deleteShift(e) {
     let shiftName, ogSel, selOpt, cusOpt;
-    shiftName = this.previousElementSibling.innerHTML;
+    shiftName = this.dataset.shift;
     ogSel = document.querySelector(".custom-shift-select select");
     selOpt = ogSel.namedItem(shiftName);
     cusOpt = this.parentElement;
