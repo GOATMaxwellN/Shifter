@@ -24,7 +24,6 @@ def google_list_events():
 @bp.route("/get-shifts", methods=["GET"])
 def get_shifts():
     if "shifts" in session:
-        print(session)
         resp = jsonify(session["shifts"])
         resp.access_control_allow_origin = "*"
         return resp

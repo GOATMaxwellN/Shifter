@@ -16,7 +16,7 @@ document.addEventListener("click", closeSelect);
 document.querySelector(".create-shift-btn").addEventListener("click", showCreateShiftView);
 document.querySelector("#create-shift-form").addEventListener("submit", createShift);
 
-for (let date in document.querySelectorAll(".calendar-date")) {
+for (let date of document.querySelectorAll(".calendar-date")) {
     date.addEventListener("click", addPendingShiftToCalendar);
 }
 
