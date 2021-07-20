@@ -34,7 +34,7 @@ function getConnectedCalendar() {
 function drawCalendar(events) {
     let daysInMonth = getDaysInMonth();
     let firstWeekday = displayedYearAndMonth.getDay();
-    let monthName = displayedYearAndMonth.toLocaleDateString("en-US", { month: 'long' });
+    let monthName = displayedYearAndMonth.toLocaleDateString("en-US", { month: 'short' });
     let calendar = document.getElementsByClassName("calendar")[0];
     let html = `
         <div class="calendar-month">${monthName}</div>

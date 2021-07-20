@@ -4,13 +4,20 @@
 const GET_SHIFTS_ENDPOINT = "http://127.0.0.1:5000/api/get-shifts";
 const CREATE_SHIFT_ENDPOINT = "http://127.0.0.1:5000/api/create-shift";
 const DELETE_SHIFT_ENDPOINT = "http://127.0.0.1:5000/api/delete-shift";
+const MONTH_TO_NUM = {
+    'Jan': '01', 'Feb': '02', 'Mar': '03',
+    'Apr': '04', 'May': '05', 'Jun': '06',
+    'Jul': '07', 'Aug': '08', 'Sep': '09',
+    'Oct': '10', 'Nov': '11', 'Dec': '12'
+};
+let pendingShifts = [];
 
 document.addEventListener("click", closeSelect);
 document.querySelector(".create-shift-btn").addEventListener("click", showCreateShiftView);
 document.querySelector("#create-shift-form").addEventListener("submit", createShift);
 
 for (let date in document.querySelectorAll(".calendar-date")) {
-    date.addEventListener("click", addShiftToCalendar);
+    date.addEventListener("click", addPendingShiftToCalendar);
 }
 
 getShifts();
@@ -220,6 +227,48 @@ function createShift(evt) {
 }
 
 
-function addShiftToCalendar(e) {
+function getSelectedShift() {
+    return document.querySelector(".custom-shift-select select")
+        .selectedOptions[0].value;
+}
 
+
+function concatDateShift(d, s) {
+    let day, month, year, dateShift;
+    day = d.firstChild.textContent;
+    if (day.length < 2) { day = '0' + day; }
+    month = MONTH_TO_NUM[document.querySelector(".calendar-month").innerHTML];
+    year = "2021";  // TODO: get user requested year
+
+    dateShift = `${year}-${month}-${day}_${s}`;
+    return dateShift;
 } 
+
+
+function addPendingShiftToCalendar(e) {
+    let shift = getSelectedShift();
+    if (shift !== -1) {
+        let event = document.createElement("DIV");
+        event.setAttribute("class", "event pending");
+        event.innerHTML = shift;
+        this.appendChild(event);
+        pendingShifts.push(concatDateShift(this, shift));
+    } else {
+        alert("No Shift is selected!");
+    }
+}
+
+
+function confirmPendingShifts() {
+    let xhr = new XMLHttpRequest();
+
+    xhr.onload = function() {
+        pendingShifts = [];
+        for (let date in document.querySelectorAll(".pending")) {
+            date.classList.remove("pending");
+        }
+    }
+
+    xhr.open("POST", ADD_SHIFT_ENDPOINT);
+    xhr.send(pendingShifts);
+}
