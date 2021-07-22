@@ -16,10 +16,6 @@ document.addEventListener("click", closeSelect);
 document.querySelector(".create-shift-btn").addEventListener("click", showCreateShiftView);
 document.querySelector("#create-shift-form").addEventListener("submit", createShift);
 
-for (let date of document.querySelectorAll(".calendar-date")) {
-    date.addEventListener("click", addPendingShiftToCalendar);
-}
-
 getShifts();
 
 
@@ -50,7 +46,7 @@ function getShifts(e) {
 function addShiftsToSelect(shifts, init=false) {
     let shiftsSelect = document.getElementById("shifts-dropdown-list");
     if (init) {
-        shiftsSelect.add(createOption("Select a Shift:"), true);
+        shiftsSelect.add(createOption("Select a Shift:", true));
         for (let s in shifts) {
             shiftsSelect.add(createOption(s));
         }
@@ -143,7 +139,7 @@ function updateSelElmnt(e) {
 
     // Undarkens the previous selected element in the options list
     let prevSel = optsList.querySelector(".select-selected-option");
-    prevSel.classList.remove(".select-selected-option");
+    prevSel.classList.remove("select-selected-option");
 
     // Darkens the new selected element, and select it in the underlying select
     this.classList.add("select-selected-option");
@@ -248,7 +244,7 @@ function concatDateShift(d, s) {
 
 function addPendingShiftToCalendar(e) {
     let shift = getSelectedShift();
-    if (shift !== -1) {
+    if (shift !== '-1') {
         let event = document.createElement("DIV");
         event.setAttribute("class", "event pending");
         event.innerHTML = shift;
