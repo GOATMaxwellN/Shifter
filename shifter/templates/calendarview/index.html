@@ -6,8 +6,8 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='calendarview/style.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='icons/fontello-41e04f2b/css/animation.css') }}">
         <script src="{{ url_for('static', filename='calendarview/calendarAuth.js') }}" defer></script>
-        <script src="{{ url_for('static', filename='calendarview/calendar.js') }}" defer></script>
-        <script src="{{ url_for('static', filename='calendarview/shifts.js') }}" defer></script>
+        <script src="{{ url_for('static', filename='calendarview/calendar.js') }}" type="module"></script>
+        <script src="{{ url_for('static', filename='calendarview/shifts.js') }}" type="module"></script>
     </head>
     <body>
         <header>
@@ -60,7 +60,7 @@
                         
                         <input type="submit" value="Create" />
                     </form>
-                    <button class="create-shift-go-back-btn" type="button" onclick="hideCreateShiftView()">Go back</button>
+                    <button class="create-shift-go-back-btn" type="button">Go back</button>
                     <div id="create-shift-status">
                         <span class="loading">Creating...</span>
                         <span class="error">Couldn't create the Shift</span>

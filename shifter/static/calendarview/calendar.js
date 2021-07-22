@@ -1,5 +1,5 @@
 "use strict";
-
+import { getSelectedShift, concatDateShift } from "./shifts.js";
 
 // === Constants
 const GOOGLE_LIST_EVENTS_ENDPOINT = "http://127.0.0.1:5000/api/google-list-events";
@@ -15,6 +15,7 @@ const NAMES_OF_DAYS = `
     <span>Saturday</span>
 `;
 
+let pendingShifts = [];
 let displayedYearAndMonth = new Date();
 displayedYearAndMonth.setDate(1);
 
@@ -32,34 +33,63 @@ function getConnectedCalendar() {
 
 
 function drawCalendar(events) {
+
+    function createMonthBox(monthName) {
+        let monthBox = document.createElement("DIV");
+        monthBox.setAttribute("class", "calendar-month");
+        monthBox.insertAdjacentText("afterbegin", monthName);
+        return monthBox;
+    }
+
+    function createWeekBox() {
+        let weekBox = document.createElement("DIV");
+        weekBox.setAttribute("class", "calendar-names-of-days");
+        weekBox.insertAdjacentHTML("afterbegin", NAMES_OF_DAYS);
+        return weekBox;
+    }
+
+    function createDateBox(dateNum, noDate = false) {
+        let dateBox = document.createElement("DIV");
+        if (!noDate) {
+            dateBox.setAttribute("id", "day" + dateNum);
+            dateBox.setAttribute("class", "calendar-date");
+            dateBox.insertAdjacentText("afterbegin", dateNum);
+            dateBox.addEventListener("click", addPendingShift);
+        } else {
+            dateBox.setAttribute("class", "no-date");
+        }
+        return dateBox;
+    }
+
     let daysInMonth = getDaysInMonth();
     let firstWeekday = displayedYearAndMonth.getDay();
     let monthName = displayedYearAndMonth.toLocaleDateString("en-US", { month: 'short' });
-    let calendar = document.getElementsByClassName("calendar")[0];
-    let html = `
-        <div class="calendar-month">${monthName}</div>
-        <div class="calendar-names-of-days">${NAMES_OF_DAYS}</div>`;
+    let calendar = document.querySelector(".calendar");
+    let calendarFrag = new DocumentFragment();
+    // Initialize with month name and weekdays
+    calendarFrag.append(createMonthBox(monthName), createWeekBox());
+    // Offset the 1st of the month to the correct weekday
     if (firstWeekday !== 0) {
         for (let i = 0; i < firstWeekday; i++) {
-            html += "<div class='no-date'></div>";
+            calendarFrag.append(createDateBox(0, true));
         }
     }
     // Draw each date box
     for (let i = 1; i <= daysInMonth; i++) {
-        html += `<div id="day${i}" class="calendar-date">${i}</div>`;
+        calendarFrag.append(createDateBox(i));
     }
-    calendar.innerHTML = html;
+    calendar.appendChild(calendarFrag);
+
     // Populate the date boxes with events in them
     events.forEach(function (v, i, a) {
-        let start;
-        let dateBox;
+        let start, dateBox;
         if ("dateTime" in v["start"]) {
             start = new Date(v["start"]["dateTime"]);
         } else {
             start = new Date(v["start"]["date"] + "T00:00:00" + OFFSET);
         }
         dateBox = document.getElementById("day" + start.getDate());
-        dateBox.innerHTML += `<div class="event">${v.summary}</div>`
+        dateBox.innerHTML += `<div class="event">${v.summary}</div>`;
     });
 }
 
@@ -163,5 +193,25 @@ function getTimeZoneOffset() {
         return sign + `${Math.abs(Math.trunc(offset))}:45`;
     }
     return sign + `${Math.abs(offset)}:00`;
+}
+
+// === Adding shifts to the calendar
+function addPendingShift(e) {
+    let shift = getSelectedShift();
+    if (shift != '-1') {
+        pendingShifts.push(concatDateShift(this.firstChild.textContent), shift);
+
+        let shiftEvent = document.createElement("DIV");
+        shiftEvent.setAttribute("class", "event pending");
+        shiftEvent.insertAdjacentText("afterbegin", shift);
+        this.appendChild(shiftEvent);
+    } else {
+        alert("No Shift is selected!");
+    }
+}
+
+
+function confirmPendingShifts() {
+    // TODO: implement
 }
 

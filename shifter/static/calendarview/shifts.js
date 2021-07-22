@@ -10,15 +10,16 @@ const MONTH_TO_NUM = {
     'Jul': '07', 'Aug': '08', 'Sep': '09',
     'Oct': '10', 'Nov': '11', 'Dec': '12'
 };
-let pendingShifts = [];
 
 document.addEventListener("click", closeSelect);
 document.querySelector(".create-shift-btn").addEventListener("click", showCreateShiftView);
+document.querySelector(".create-shift-go-back-btn").addEventListener("click", hideCreateShiftView);
 document.querySelector("#create-shift-form").addEventListener("submit", createShift);
 
 getShifts();
 
 
+// === Switching to and from the Create Shift view ===
 function showCreateShiftView() {
     document.getElementById("select-shift-view").style.display = "none";
     document.getElementById("create-shift-view").style.display = "grid";
@@ -31,6 +32,7 @@ function hideCreateShiftView() {
 }
 
 
+// === Making custom dropdown menu to select a Shift
 function getShifts(e) {
     let req = new XMLHttpRequest();
     req.responseType = "json";
@@ -134,12 +136,12 @@ function updateSelElmnt(e) {
     selElmnt = document.querySelector(".custom-shift-select .select-selected");
     selElmnt.innerHTML = this.firstElementChild.innerHTML;
 
-    optsList = this.parentElement.children;
+    optsList = this.parentElement;
     ogSel = document.querySelector(".custom-shift-select select");
 
     // Undarkens the previous selected element in the options list
     let prevSel = optsList.querySelector(".select-selected-option");
-    prevSel.classList.remove("select-selected-option");
+    if (prevSel !== null) { prevSel.classList.remove("select-selected-option"); }
 
     // Darkens the new selected element, and select it in the underlying select
     this.classList.add("select-selected-option");
@@ -147,6 +149,21 @@ function updateSelElmnt(e) {
 }
 
 
+function closeSelect(e) {
+    // Do not close select if it was from delete btn
+    if (e.target.classList.contains("icon-trash-empty")
+        || e.target.classList.contains("select-selected")) {
+        return;
+    }
+
+    document.querySelector(".custom-shift-select .select-options")
+        .classList.add("select-hide");
+    document.querySelector(".custom-shift-select .select-selected")
+        .classList.remove("select-arrow-active");
+}
+
+
+// === Create and delete Shifts
 function deleteShift(e) {
     let shiftName, ogSel, selOpt, cusOpt;
     shiftName = this.dataset.shift;
@@ -180,20 +197,6 @@ function deleteShift(e) {
 }
 
 
-function closeSelect(e) {
-    // Do not close select if it was from delete btn
-    if (e.target.classList.contains("icon-trash-empty") 
-        || e.target.classList.contains("select-selected")) { 
-        return;
-    }
-
-    document.querySelector(".custom-shift-select .select-options")
-        .classList.add("select-hide");
-    document.querySelector(".custom-shift-select .select-selected")
-        .classList.remove("select-arrow-active");
-}
-
-
 function createShift(evt) {
     evt.preventDefault();
 
@@ -224,20 +227,20 @@ function createShift(evt) {
 }
 
 
-function getSelectedShift() {
+// === Helper Shift functions
+export function getSelectedShift() {
     return document.querySelector(".custom-shift-select select")
         .selectedOptions[0].value;
 }
 
 
-function concatDateShift(d, s) {
-    let day, month, year, dateShift;
-    day = d.firstChild.textContent;
+export function concatDateShift(day, shiftName) {
+    let month, year, dateShift;
     if (day.length < 2) { day = '0' + day; }
     month = MONTH_TO_NUM[document.querySelector(".calendar-month").innerHTML];
     year = "2021";  // TODO: get user requested year
 
-    dateShift = `${year}-${month}-${day}_${s}`;
+    dateShift = `${year}-${month}-${day}_${shiftName}`;
     return dateShift;
 } 
 
