@@ -14,6 +14,8 @@ const NAMES_OF_DAYS = `
     <span>Friday</span>
     <span>Saturday</span>
 `;
+const CONFIRM_BTN = document.querySelector(".confirm-btn");
+CONFIRM_BTN.addEventListener("click", confirmPendingShifts);
 
 let pendingShifts = [];
 let displayedYearAndMonth = new Date();
@@ -199,6 +201,8 @@ function getTimeZoneOffset() {
 function addPendingShift(e) {
     let shift = getSelectedShift();
     if (shift != '-1') {
+        if (pendingShifts.length === 0) { CONFIRM_BTN.disabled = false; }
+
         pendingShifts.push(concatDateShift(this.firstChild.textContent), shift);
 
         let shiftEvent = document.createElement("DIV");
@@ -213,5 +217,7 @@ function addPendingShift(e) {
 
 function confirmPendingShifts() {
     // TODO: implement
+    CONFIRM_BTN.disabled = true;
+    pendingShifts = [];
 }
 

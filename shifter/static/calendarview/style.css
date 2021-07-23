@@ -63,6 +63,17 @@ header form {
     grid-column: 1 / 3;
     grid-row: 1 / 2;
     background-color: #ABEBC6;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+}
+
+.confirm-btn {
+    grid-column: 3 / 4;
+    border-radius: 10px;
+    justify-self: center;
+    align-self: center;
+    font-size: 1vw;
+    padding: 1em 1.3em;
 }
 
 .calendar-wrapper {
@@ -263,11 +274,10 @@ header form {
     font-size: 0.8em;
 }
 .pending {
-    transition: border 500ms ease-out;
-    animation: toggle-border 1s infinite alternate;
+    animation: light-pulse 1s infinite alternate;
 }
 
-@keyframes toggle-border {
+@keyframes light-pulse {
     from { border-color: black; color: black; }
     to { border-color: rgb(0, 0, 0, 0.4); color: rgb(0, 0, 0, 0.4); }
 }
