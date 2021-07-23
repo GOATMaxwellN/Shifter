@@ -262,6 +262,15 @@ header form {
     width: 100%;
     font-size: 0.8em;
 }
+.pending {
+    transition: border 500ms ease-out;
+    animation: toggle-border 1s infinite alternate;
+}
+
+@keyframes toggle-border {
+    from { border-color: black; color: black; }
+    to { border-color: rgb(0, 0, 0, 0.4); color: rgb(0, 0, 0, 0.4); }
+}
 
 .connect-btns-wrapper {
     grid-column: 3 / 6;
