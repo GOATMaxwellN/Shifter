@@ -1,0 +1,4 @@
+
+.icon-trash-empty:before { content: '\e800'; } /* '' */
+.icon-calendar:before { content: '\e801'; } /* '' */
+.icon-google:before { content: '\f1a0'; } /* '' */
