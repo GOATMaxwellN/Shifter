@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <title>Shifter - Calendar View</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='calendarview/style.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='icons/fontello-41e04f2b/css/animation.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='icons/fontello-ec1a3ecf/css/animation.css') }}">
         <script src="{{ url_for('static', filename='calendarview/calendarAuth.js') }}" defer></script>
         <script src="{{ url_for('static', filename='calendarview/calendar.js') }}" type="module"></script>
         <script src="{{ url_for('static', filename='calendarview/shifts.js') }}" type="module"></script>
@@ -19,8 +19,11 @@
         </header>
         <section class="content">
             <div class="config-values">
-                <select></select>
-                <div></div>
+                <select style="align-self:center;"></select>
+                <div class="config-connect-btns-wrapper">
+                    <button class="google-style" type="button"><i>&#xf1a0</i>Google</button>
+                    <button class="outlook-style" type="button"><i>&#xe801</i>Outlook</button>
+                </div>
                 <button class="confirm-btn" type="button" disabled>Confirm</button>
             </div>
             <div class="calendar-wrapper">
