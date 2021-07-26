@@ -1,5 +1,5 @@
 "use strict";
-
+import { drawCustomShiftSelect, addShiftToCustomSelect } from "./customElems.js";
 
 const GET_SHIFTS_ENDPOINT = "http://127.0.0.1:5000/api/get-shifts";
 const CREATE_SHIFT_ENDPOINT = "http://127.0.0.1:5000/api/create-shift";
@@ -11,7 +11,7 @@ const MONTH_TO_NUM = {
     'Oct': '10', 'Nov': '11', 'Dec': '12'
 };
 
-document.addEventListener("click", closeSelect);
+
 document.querySelector(".create-shift-btn").addEventListener("click", showCreateShiftView);
 document.querySelector(".create-shift-go-back-btn").addEventListener("click", hideCreateShiftView);
 document.querySelector("#create-shift-form").addEventListener("submit", createShift);
@@ -67,105 +67,20 @@ function addShiftsToSelect(shifts, init = false) {
         for (let s in shifts) {
             shiftsSelect.add(createOption(s));
         }
-        drawCustomShiftSelect();
+
+        // Once underlying <select> is filled, create custom select
+        drawCustomShiftSelect();        
     } else {
         // If init=false, shifts is just one shift and a string
         shiftsSelect.add(createOption(shifts));
         // Add it to the custom select as well
-        document.querySelector(".custom-shift-select .select-options")
-            .appendChild(createCustomOption(shifts));
+        addShiftToCustomSelect(shifts);
     }
-}
-
-
-// === Making custom dropdown menu to select a Shift ===
-function drawCustomShiftSelect() {
-    let ogSel, selCont, selElmnt;
-    ogSel = document.querySelector(".custom-shift-select select");
-    selCont = document.querySelector(".custom-shift-select");
-    // Create the selected element that will open and close the select
-    selElmnt = document.createElement("DIV");
-    selElmnt.setAttribute("class", "select-selected");
-    selElmnt.innerHTML = ogSel.options[0].innerHTML;
-    selCont.appendChild(selElmnt);
-
-    // Create the options
-    let opts;
-    opts = document.createElement("DIV");
-    opts.classList.add("select-options");
-    opts.classList.add("select-hide");
-    for (let i = 1; i < ogSel.length; i++) {
-        let opt = createCustomOption(ogSel.options[i].innerHTML);
-        opts.appendChild(opt);
-    }
-    selCont.appendChild(opts);
-
-    // Show/Hide opts when selElmnt is clicked
-    selElmnt.addEventListener("click", function() {
-        document.querySelector(".custom-shift-select .select-options")
-            .classList.toggle("select-hide");
-        this.classList.toggle("select-arrow-active");
-    });
-}
-
-
-function createCustomOption(name) {
-    let opt, p, delBtn;
-    opt = document.createElement("DIV");
-    opt.setAttribute("class", "select-option");
-    opt.addEventListener("click", updateSelElmnt)
-
-    p = document.createElement("P");
-    p.innerHTML = name;
-
-    delBtn = document.createElement("BUTTON");
-    delBtn.innerHTML = "&#xe800;"
-    delBtn.setAttribute("class", "icon-trash-empty");
-    delBtn.setAttribute("data-shift", name);
-    delBtn.addEventListener("click", deleteShift);
-
-    opt.appendChild(p); opt.appendChild(delBtn);
-    return opt;
-}
-
-
-function updateSelElmnt(e) {
-    // If this bubbled up from delete btn, don't do anything
-    if (e.target.classList.contains("icon-trash-empty")) { return; }
-
-    let selElmnt, optsList, ogSel;
-    selElmnt = document.querySelector(".custom-shift-select .select-selected");
-    selElmnt.innerHTML = this.firstElementChild.innerHTML;
-
-    optsList = this.parentElement;
-    ogSel = document.querySelector(".custom-shift-select select");
-
-    // Undarkens the previous selected element in the options list
-    let prevSel = optsList.querySelector(".select-selected-option");
-    if (prevSel !== null) { prevSel.classList.remove("select-selected-option"); }
-
-    // Darkens the new selected element, and select it in the underlying select
-    this.classList.add("select-selected-option");
-    ogSel.selectedIndex = ogSel.namedItem(this.firstElementChild.innerHTML).index;
-}
-
-
-function closeSelect(e) {
-    // Do not close select if it was from delete btn
-    if (e.target.classList.contains("icon-trash-empty")
-        || e.target.classList.contains("select-selected")) {
-        return;
-    }
-
-    document.querySelector(".custom-shift-select .select-options")
-        .classList.add("select-hide");
-    document.querySelector(".custom-shift-select .select-selected")
-        .classList.remove("select-arrow-active");
 }
 
 
 // === Create and delete Shifts
-function deleteShift(e) {
+export function deleteShift(e) {
     let shiftName, ogSel, selOpt, cusOpt;
     shiftName = this.dataset.shift;
     ogSel = document.querySelector(".custom-shift-select select");
