@@ -32,7 +32,7 @@ function hideCreateShiftView() {
 }
 
 
-// === Making custom dropdown menu to select a Shift
+// === Populates underlying <select> with the user's Shifts
 function getShifts(e) {
     let req = new XMLHttpRequest();
     req.responseType = "json";
@@ -45,7 +45,22 @@ function getShifts(e) {
 }
 
 
-function addShiftsToSelect(shifts, init=false) {
+function addShiftsToSelect(shifts, init = false) {
+
+    function createOption(name, def = false) {
+        let opt = document.createElement("OPTION");
+        opt.innerHTML = name;
+        opt.setAttribute("name", name);
+        opt.setAttribute("id", name);
+        // default option gets a value of -1
+        if (!def) {
+            opt.setAttribute("value", name);
+        } else {
+            opt.setAttribute("value", -1);
+        }
+        return opt;
+    }
+
     let shiftsSelect = document.getElementById("shifts-dropdown-list");
     if (init) {
         shiftsSelect.add(createOption("Select a Shift:", true));
@@ -63,21 +78,7 @@ function addShiftsToSelect(shifts, init=false) {
 }
 
 
-function createOption(name, def=false) {
-    let opt = document.createElement("OPTION");
-    opt.innerHTML = name;
-    opt.setAttribute("name", name);
-    opt.setAttribute("id", name);
-    // default option gets a value of -1
-    if (!def) {
-        opt.setAttribute("value", name);
-    } else {
-        opt.setAttribute("value", -1);
-    }
-    return opt;
-}
-
-
+// === Making custom dropdown menu to select a Shift ===
 function drawCustomShiftSelect() {
     let ogSel, selCont, selElmnt;
     ogSel = document.querySelector(".custom-shift-select select");
@@ -189,7 +190,7 @@ function deleteShift(e) {
     }
 
     xhr.onerror = function() {
-        cusOpt.style.animation = none;
+        cusOpt.style.animation = "none";
     }
 
     xhr.open("DELETE", url);
