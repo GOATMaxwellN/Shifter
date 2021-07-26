@@ -3,6 +3,7 @@ import { getSelectedShift, concatDateShift } from "./shifts.js";
 
 // === Constants
 const GOOGLE_LIST_EVENTS_ENDPOINT = "http://127.0.0.1:5000/api/google-list-events";
+const GOOGLE_LIST_CALENDARS = "http://127.0.0.1:5000/api/google-list-calendars";
 const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const OFFSET = getTimeZoneOffset();
 const NAMES_OF_DAYS = `
@@ -16,6 +17,7 @@ const NAMES_OF_DAYS = `
 `;
 const CONFIRM_BTN = document.querySelector(".confirm-btn");
 CONFIRM_BTN.addEventListener("click", confirmPendingShifts);
+let calendars;  // Most calendar services allow one account to have several calendars
 
 let pendingShifts = [];
 let displayedYearAndMonth = new Date();
@@ -27,11 +29,27 @@ getConnectedCalendar();
 function getConnectedCalendar() {
     let cal = document.querySelector(".calendar").getAttribute("id");
     if (cal === "google") {
-        googleListEvents(startOfMonth(), endOfMonth());
+        googleListEvents(startOfMonth(), endOfMonth(), "primary");
+        googleListCalendars();
     } else if (cal === "outlook") {
         // TODO: something for outlook
     }
-}   
+}
+
+
+function addCalendars(cals) {
+    calendars = cals;
+    let calsSel = document.querySelector("#calendar-select");
+    for (let cal in calendars) {
+        let opt = document.createElement("OPTION");
+        // Will show name of the calendar
+        opt.innerHTML = cal;
+        // Will hold id of the calendar in value attribute
+        opt.setAttribute("value", calendars.cal);
+        // Add it to the select
+        calsSel.add(opt);
+    }
+}
 
 
 function drawCalendar(events) {
@@ -158,16 +176,34 @@ function getDaysInMonth() {
 }
 
 
-function googleListEvents(min, max) {
+function googleListEvents(min, max, cal) {
     let req = new XMLHttpRequest();
+    let url = new URL(GOOGLE_LIST_EVENTS_ENDPOINT);
+    url.searchParams.append("timeMin", min);
+    url.searchParams.append("timeMax", max);
+    url.searchParams.append("timeZone", TIMEZONE);
+    url.searchParams.append("cal", cal);
+
     req.responseType = "json";
     req.onload = function () {
-        let events = this.response;
-        drawCalendar(events);
+        drawCalendar(this.response);
     }
-    let url = GOOGLE_LIST_EVENTS_ENDPOINT
-        + `?timeMin=${min}&timeMax=${max}&timeZone=${TIMEZONE}`;
+
     req.open("GET", url);
+    req.send();
+}
+
+
+function googleListCalendars() {
+    let req = new XMLHttpRequest();
+    req.responseType = "json";
+
+    // If succesful, add calendars to CALENDARS constant
+    req.onload = function() {
+        addCalendars(this.response);
+    }
+
+    req.open("GET", GOOGLE_LIST_CALENDARS);
     req.send();
 }
 

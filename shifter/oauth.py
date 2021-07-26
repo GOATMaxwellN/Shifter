@@ -106,6 +106,29 @@ class GoogleAuth:
 
         return r.json()["items"]
 
+    @staticmethod
+    @access_token_required
+    def list_calendars():
+        endpoint = "https://www.googleapis.com/calendar/v3/users/me/calendarList"
+        access_token = session['credentials']['google']['access_token']
+        r = requests.get(
+            endpoint, headers={"Authorization": f"Bearer {access_token}"}
+        )
+
+        if r.status_code == 401:
+            access_token = GoogleAuth.get_new_access_token()
+            r = requests.get(
+                endpoint, headers={"Authorization": f"Bearer {access_token}"}
+            )
+        
+        cals = r.json()["items"]
+        # Only going to return relevant information. 
+        # Name and id of each calendar
+        r_cals = {}
+        for cal in cals:
+            r_cals[cal["summary"]] = cal["id"]
+        return r_cals
+
 
 @bp.route("/connect-to-google", methods=["GET"])
 def connect_to_google():

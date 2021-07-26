@@ -15,10 +15,13 @@ def google_list_events():
     events = GoogleAuth.list_events(
         start, end, timezone
     )
+    return jsonify(events)
 
-    resp = jsonify(events)
-    resp.access_control_allow_origin = "*"
-    return resp
+
+@bp.route("/google-list-calendars", methods=["GET"])
+def google_list_calendars():
+    cals = GoogleAuth.list_calendars()
+    return jsonify(cals)
 
 
 @bp.route("/get-shifts", methods=["GET"])
