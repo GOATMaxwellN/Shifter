@@ -57,7 +57,7 @@ function addCalendars(cals) {
         if (calendars.primary === cal) {
             opt.setAttribute("value", "primary");
         } else {
-            opt.setAttribute("value", calendars.cal);
+            opt.setAttribute("value", calendars[cal]);
         }
         calsSel.append(opt);
     }
