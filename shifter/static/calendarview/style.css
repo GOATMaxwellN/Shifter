@@ -118,7 +118,7 @@ header form {
 
 .custom-select-calendars .calendar-list .calendar-option {
     background-color: rgb(205, 97, 85);
-    border-top-color: rgb(190, 91, 80);
+    border-top-color: rgb(157, 76, 67);
     font-size: 1em;
     text-align: center;
 }
@@ -243,10 +243,12 @@ header form {
 
 .custom-shift-select .select-options div {
     background-color: rgb(205, 97, 85);
-    border-top: 1px solid white;
+    border-top: 1px solid rgb(157, 76, 67);
+    border-bottom: transparent;
     display: grid;
     grid-template-columns: 4fr 1fr;
     grid-template-rows: 1fr;
+    cursor: default;
 }
 .custom-shift-select .select-options div:hover {
     background-color: rgb(190, 91, 80);
