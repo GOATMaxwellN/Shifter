@@ -127,6 +127,8 @@ class GoogleAuth:
         r_cals = {}
         for cal in cals:
             r_cals[cal["summary"]] = cal["id"]
+            if cal.get("primary", False):
+                r_cals["primary"] = cal["summary"]
         return r_cals
 
 

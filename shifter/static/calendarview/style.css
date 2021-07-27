@@ -26,6 +26,7 @@ html {
 body {
     height: 100%;
     width: 100%;
+    overflow: auto;
 }
 
 /* Header with Shifter and user greeting */
@@ -65,6 +66,70 @@ header form {
     background-color: #ABEBC6;
     display: grid;
     grid-template-columns: 1fr 2fr 1fr;
+}
+
+/* Custom calendar select */
+.custom-select-calendars select { display: none; }
+
+.custom-select-calendars {
+    position: relative;
+    place-self: center;
+    width: 75%;
+}
+
+.custom-select-calendars .opener {
+    position: relative;
+    display: block;
+    background-color: rgb(205, 97, 85);
+    text-align: center;
+    font-size: 1.3em;
+    padding: 0.3em;
+    cursor: pointer;
+}
+
+.custom-select-calendars .opener::after {
+    position: absolute;
+    content: "";
+    top: 50%;
+    right: 5%;
+    border: 6px solid;
+    border-color: white transparent transparent transparent;
+}
+.custom-select-calendars .opener.active::after {
+    top: 25%;
+    border-color: transparent transparent white transparent;
+}
+
+.custom-select-calendars .calendar-list {
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    z-index: 99;
+    display: grid;
+    grid-auto-flow: row;
+    grid-auto-rows: 1.5em;
+    max-height: 7.5em;
+    overflow-y: auto;
+    cursor: default;
+}
+.custom-select-calendars .calendar-list.hide {
+    display: none;
+}
+
+.custom-select-calendars .calendar-list .calendar-option {
+    background-color: rgb(205, 97, 85);
+    border-top-color: rgb(190, 91, 80);
+    font-size: 1em;
+    text-align: center;
+}
+
+.custom-select-calendars .calendar-list .calendar-option:hover {
+    background-color: rgb(190, 91, 80);
+}
+
+.custom-select-calendars .calendar-list .selected-calendar,
+.custom-select-calendars .calendar-list .selected-calendar:hover {
+    background-color: red;
 }
 
 .config-connect-btns-wrapper {
@@ -174,7 +239,6 @@ header form {
 
 .custom-shift-select .select-options {
     grid-row: 2 / 3;
-    color:rgb(240, 243, 244);
 }
 
 .custom-shift-select .select-options div {
@@ -187,7 +251,8 @@ header form {
 .custom-shift-select .select-options div:hover {
     background-color: rgb(190, 91, 80);
 }
-.custom-shift-select .select-options .select-selected-option {
+.custom-shift-select .select-options .select-selected-option,
+.custom-shift-select .select-options .select-selected-option:hover {
     background-color: red;
 }
 

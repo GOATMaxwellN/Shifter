@@ -1,7 +1,8 @@
 "use strict";
 import { deleteShift } from "./shifts.js";
+import { switchCalendar } from "./calendar.js";
 
-// === Custom dropdown menu (select) for selecting Shifts ===
+// === CUSTOM DROPDOWN MENU (SELECT) FOR SELECTING SHIFTS ===
 export function drawCustomShiftSelect() {
     let ogSel, selCont, selElmnt
     /* Get underlying <select> which contains Shift names and <div>
@@ -98,3 +99,63 @@ function closeSelect(e) {
         .classList.remove("select-arrow-active");
 }
 // =============
+
+
+// ==== CUSTOM DROPDOWN MENU TO SELECT A CALENDAR ====
+export function drawCustomCalendarSelect() {
+    // Get underlying <select> with calendar names and our container
+    let ogSel = document.querySelector(".custom-select-calendars select");
+    let selCont = document.querySelector(".custom-select-calendars");
+
+    // Element that will open dropdown menu to select a calendar
+    let openElem = document.createElement("DIV");
+    openElem.setAttribute("class", "opener");
+    openElem.innerHTML = "Switch calendars:";
+
+    // Menu that holds the calendar names
+    let calsList = document.createElement("DIV");
+    calsList.setAttribute("class", "calendar-list hide");
+    /* Iterate over underlying <select> and create the custom options
+    with the calendar names */
+    for (let i = 0; i < ogSel.length; i++) {
+        let calName = ogSel.options[i].innerHTML;
+        let calOpt = document.createElement("DIV");
+        calOpt.innerHTML = calName;
+        if (ogSel.options[i].value === "primary") {
+            calOpt.setAttribute("class", "calendar-option selected-calendar");
+        } else {
+            calOpt.setAttribute("class", "calendar-option");
+        }
+        calOpt.setAttribute("value", calName);
+        calOpt.addEventListener("click", switchCalendar);
+        calOpt.addEventListener("click", highlightSelectedCalendar);
+        calsList.appendChild(calOpt);
+    }
+    
+    // Allow openElem to toggle viewing of the calsList
+    openElem.addEventListener("click", function() {
+        calsList.classList.toggle("hide");
+        this.classList.toggle("active");
+    });
+
+    // Any click aside from the opener should close calsList
+    document.addEventListener("click", function(e) {
+        if (e.target.classList.contains("opener")) { return; }
+        calsList.classList.add("hide");
+        document.querySelector(".custom-select-calendars .opener")
+            .classList.remove("active");
+    })
+    
+    selCont.appendChild(openElem);
+    selCont.appendChild(calsList);
+}
+
+
+function highlightSelectedCalendar(e) {
+    // Get currently highlighted calendar and unhighlight it
+    this.parentElement.querySelector(".selected-calendar")
+        .classList.remove("selected-calendar");
+
+    // Highlight this calendar option
+    this.classList.add("selected-calendar");
+}

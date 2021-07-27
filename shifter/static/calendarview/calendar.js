@@ -1,4 +1,5 @@
 "use strict";
+import { drawCustomCalendarSelect } from "./customElems.js";
 import { getSelectedShift, concatDateShift } from "./shifts.js";
 
 // === Constants
@@ -17,7 +18,10 @@ const NAMES_OF_DAYS = `
 `;
 const CONFIRM_BTN = document.querySelector(".confirm-btn");
 CONFIRM_BTN.addEventListener("click", confirmPendingShifts);
+
 let calendars;  // Most calendar services allow one account to have several calendars
+let calendarVendor;
+let selectedCalendar;
 
 let pendingShifts = [];
 let displayedYearAndMonth = new Date();
@@ -29,7 +33,9 @@ getConnectedCalendar();
 function getConnectedCalendar() {
     let cal = document.querySelector(".calendar").getAttribute("id");
     if (cal === "google") {
-        googleListEvents(startOfMonth(), endOfMonth(), "primary");
+        calendarVendor = "google";
+        selectedCalendar = "primary";
+        googleListEvents(startOfMonth(), endOfMonth(), selectedCalendar);
         googleListCalendars();
     } else if (cal === "outlook") {
         // TODO: something for outlook
@@ -39,16 +45,23 @@ function getConnectedCalendar() {
 
 function addCalendars(cals) {
     calendars = cals;
-    let calsSel = document.querySelector("#calendar-select");
+    let calsSel = document.querySelector(".custom-select-calendars select");
     for (let cal in calendars) {
+        if (cal === "primary") { continue; }
+
         let opt = document.createElement("OPTION");
         // Will show name of the calendar
         opt.innerHTML = cal;
-        // Will hold id of the calendar in value attribute
-        opt.setAttribute("value", calendars.cal);
-        // Add it to the select
-        calsSel.add(opt);
+        /* Will hold id of the calendar in value attribute. If 
+        calendar is the primary calendar, id can be just 'primary' */
+        if (calendars.primary === cal) {
+            opt.setAttribute("value", "primary");
+        } else {
+            opt.setAttribute("value", calendars.cal);
+        }
+        calsSel.append(opt);
     }
+    drawCustomCalendarSelect();
 }
 
 
@@ -114,6 +127,14 @@ function drawCalendar(events) {
 }
 
 
+export function switchCalendar(e) {
+    if (calendarVendor == "google") {
+        selectedCalendar = calendars[e.target.value];
+        googleListEvents(startOfMonth(), endOfMonth(), selectedCalendar);
+    }
+}
+
+
 function nextMonth() {
     let month = displayedYearAndMonth.getMonth();
     let year = displayedYearAndMonth.getFullYear();
@@ -127,7 +148,10 @@ function nextMonth() {
     }
 
     let min = startOfMonth(), max = endOfMonth();
-    googleListEvents(min, max);
+
+    if (calendarVendor === "google") {
+        googleListEvents(min, max, selectedCalendar);
+    }
 }
 
 
@@ -144,7 +168,10 @@ function previousMonth() {
     }
 
     let min = startOfMonth(), max = endOfMonth();
-    googleListEvents(min, max);
+
+    if (calendarVendor === "google") {
+        googleListEvents(min, max, selectedCalendar);
+    }
 }
 
 
