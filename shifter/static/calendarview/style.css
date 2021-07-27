@@ -129,7 +129,7 @@ header form {
 
 .custom-select-calendars .calendar-list .selected-calendar,
 .custom-select-calendars .calendar-list .selected-calendar:hover {
-    background-color: red;
+    background-color: rgb(157, 76, 67);
 }
 
 .config-connect-btns-wrapper {
@@ -255,7 +255,7 @@ header form {
 }
 .custom-shift-select .select-options .select-selected-option,
 .custom-shift-select .select-options .select-selected-option:hover {
-    background-color: red;
+    background-color: rgb(157, 76, 67);
 }
 
 .custom-shift-select .select-options div button {
