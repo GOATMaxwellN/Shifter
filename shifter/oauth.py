@@ -2,6 +2,7 @@ from flask import (
     Blueprint, current_app, redirect, request,
     session, url_for)
 import json
+from urllib.parse import quote
 from .auth import get_logged_in_user_id
 import requests
 from .db import get_db
@@ -88,8 +89,10 @@ class GoogleAuth:
 
     @staticmethod
     @access_token_required
-    def list_events(start, end, timezone):
-        endpoint = "https://www.googleapis.com/calendar/v3/calendars/primary/events"
+    def list_events(start, end, timezone, calendar_id):
+        # Have to manually % encode calendar_id using quote()
+        # since requests doesn't do it automatically
+        endpoint = f"https://www.googleapis.com/calendar/v3/calendars/{quote(calendar_id)}/events"
         params=[("timeMin", start), ("timeMax", end), ("timeZone", timezone)]
         access_token = session['credentials']['google']['access_token']
         r = requests.get(

@@ -1,5 +1,4 @@
-from shifter.auth import get_logged_in_user_id
-from flask import Blueprint, request, jsonify, session, render_template, url_for
+from flask import Blueprint, request, jsonify, session
 from .auth import get_logged_in_user_id
 from .oauth import GoogleAuth
 from .db import get_db
@@ -12,8 +11,9 @@ bp = Blueprint("api", "shifter", url_prefix="/api")
 def google_list_events():
     start, end = request.args["timeMin"], request.args["timeMax"]
     timezone = request.args["timeZone"]
+    calendar_id = request.args["calendarId"]
     events = GoogleAuth.list_events(
-        start, end, timezone
+        start, end, timezone, calendar_id
     )
     return jsonify(events)
 

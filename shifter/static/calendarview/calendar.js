@@ -67,6 +67,12 @@ function addCalendars(cals) {
 
 function drawCalendar(events) {
 
+    function clearCalendar() {
+        while (calendar.firstChild) {
+            calendar.removeChild(calendar.lastChild);
+        }
+    }
+
     function createMonthBox(monthName) {
         let monthBox = document.createElement("DIV");
         monthBox.setAttribute("class", "calendar-month");
@@ -99,6 +105,8 @@ function drawCalendar(events) {
     let monthName = displayedYearAndMonth.toLocaleDateString("en-US", { month: 'short' });
     let calendar = document.querySelector(".calendar");
     let calendarFrag = new DocumentFragment();
+    clearCalendar();
+
     // Initialize with month name and weekdays
     calendarFrag.append(createMonthBox(monthName), createWeekBox());
     // Offset the 1st of the month to the correct weekday
@@ -129,7 +137,7 @@ function drawCalendar(events) {
 
 export function switchCalendar(e) {
     if (calendarVendor == "google") {
-        selectedCalendar = calendars[e.target.value];
+        selectedCalendar = calendars[e.target.getAttribute("value")];
         googleListEvents(startOfMonth(), endOfMonth(), selectedCalendar);
     }
 }
@@ -203,13 +211,13 @@ function getDaysInMonth() {
 }
 
 
-function googleListEvents(min, max, cal) {
+function googleListEvents(min, max, calendarId) {
     let req = new XMLHttpRequest();
     let url = new URL(GOOGLE_LIST_EVENTS_ENDPOINT);
     url.searchParams.append("timeMin", min);
     url.searchParams.append("timeMax", max);
     url.searchParams.append("timeZone", TIMEZONE);
-    url.searchParams.append("cal", cal);
+    url.searchParams.append("calendarId", calendarId);
 
     req.responseType = "json";
     req.onload = function () {
