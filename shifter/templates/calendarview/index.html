@@ -46,6 +46,10 @@
                     {% if denied != None %}<span id="error">Could not connect to calendar. Click to dismiss.</span>{% endif %}
                     {% endif %}
                 </div>
+                <!-- This is a loading animation for when calendar is not loaded or is switching -->
+                <div class="spinner-overlay hide">
+                    <div class="spinner"></div>
+                </div> 
             </div>
             <div class="shift-config">
                 <div id="select-shift-view">

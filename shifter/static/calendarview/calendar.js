@@ -65,6 +65,12 @@ function addCalendars(cals) {
 }
 
 
+function showHideSpinner() {
+    document.querySelector(".spinner-overlay")
+        .classList.toggle("hide");
+}
+
+
 function drawCalendar(events) {
 
     function clearCalendar() {
@@ -132,6 +138,8 @@ function drawCalendar(events) {
         dateBox = document.getElementById("day" + start.getDate());
         dateBox.innerHTML += `<div class="event">${v.summary}</div>`;
     });
+
+    showHideSpinner()  // Removes spinner animation
 }
 
 
@@ -212,6 +220,8 @@ function getDaysInMonth() {
 
 
 function googleListEvents(min, max, calendarId) {
+    showHideSpinner();  // Show spinner animation on top of calendar
+
     let req = new XMLHttpRequest();
     let url = new URL(GOOGLE_LIST_EVENTS_ENDPOINT);
     url.searchParams.append("timeMin", min);
