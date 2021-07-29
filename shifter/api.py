@@ -7,39 +7,18 @@ from .db import get_db
 bp = Blueprint("api", "shifter", url_prefix="/api")
 
 
-@bp.route("/google-list-events", methods=["GET"])
-def google_list_events():
-    start, end = request.args["timeMin"], request.args["timeMax"]
-    timezone = request.args["timeZone"]
-    calendar_id = request.args["calendarId"]
-    events = GoogleAuth.list_events(
-        start, end, timezone, calendar_id
-    )
-    return jsonify(events)
-
-
-@bp.route("/google-list-calendars", methods=["GET"])
-def google_list_calendars():
-    cals = GoogleAuth.list_calendars()
-    return jsonify(cals)
-
-
 @bp.route("/get-shifts", methods=["GET"])
 def get_shifts():
     if "shifts" in session:
-        resp = jsonify(session["shifts"])
-        resp.access_control_allow_origin = "*"
-        return resp
+        return jsonify(session["shifts"])
     else:
         db = get_db()
         user = db.users.find({"_id": get_logged_in_user_id()})[0]
         # Add shifts to the session
         session["shifts"] = user["shifts"]
 
-        resp = jsonify(user["shifts"])
-        resp.access_control_allow_origin = "*"
-        return resp
-
+        return jsonify(user["shifts"])
+        
 
 @bp.route("/create-shift", methods=("POST",))
 def create_shift():
@@ -90,3 +69,20 @@ def delete_shift():
     session.modified = True
 
     return "Success", 200
+
+
+@bp.route("/google-list-events", methods=["GET"])
+def google_list_events():
+    start, end = request.args["timeMin"], request.args["timeMax"]
+    timezone = request.args["timeZone"]
+    calendar_id = request.args["calendarId"]
+    events = GoogleAuth.list_events(
+        start, end, timezone, calendar_id
+    )
+    return jsonify(events)
+
+
+@bp.route("/google-list-calendars", methods=["GET"])
+def google_list_calendars():
+    cals = GoogleAuth.list_calendars()
+    return jsonify(cals)
