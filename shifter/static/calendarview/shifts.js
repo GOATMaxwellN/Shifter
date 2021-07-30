@@ -1,5 +1,6 @@
 "use strict";
 import { drawCustomShiftSelect, addShiftToCustomSelect } from "./customElems.js";
+import { OFFSET } from "./calendar.js";
 
 const GET_SHIFTS_ENDPOINT = "http://127.0.0.1:5000/api/get-shifts";
 const CREATE_SHIFT_ENDPOINT = "http://127.0.0.1:5000/api/create-shift";
@@ -119,6 +120,9 @@ function createShift(evt) {
     let xhr = new XMLHttpRequest();
     xhr.responseType = "json";
     let fd = new FormData(evt.target); // evt.target is the form
+    // Append :00 seconds to the start and end times
+    fd.set("start-time", fd.get("start-time") + ":00" + OFFSET);
+    fd.set("end-time", fd.get("end-time") + ":00" + OFFSET);
 
     // If successful, remove the create shift view and loading
     // animation as well as update the shifts dropdown list

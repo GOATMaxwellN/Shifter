@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify, session
+from werkzeug.wrappers import response
 from .auth import get_logged_in_user_id
 from .oauth import GoogleAuth
 from .db import get_db
@@ -71,18 +72,27 @@ def delete_shift():
     return "Success", 200
 
 
+# === Google endpoints ===
 @bp.route("/google-list-events", methods=["GET"])
 def google_list_events():
     start, end = request.args["timeMin"], request.args["timeMax"]
     timezone = request.args["timeZone"]
     calendar_id = request.args["calendarId"]
-    events = GoogleAuth.list_events(
+    resp = GoogleAuth.list_events(
         start, end, timezone, calendar_id
     )
-    return jsonify(events)
+    return resp
 
 
 @bp.route("/google-list-calendars", methods=["GET"])
 def google_list_calendars():
     cals = GoogleAuth.list_calendars()
     return jsonify(cals)
+
+
+@bp.route("/google-add-shift", methods=["POST"])
+def google_add_shift():
+    date_shifts = request.form["dateShifts"]
+    calendar_id = request.form["calendarId"]
+    resp = GoogleAuth.add_events(date_shifts, calendar_id)
+    return resp

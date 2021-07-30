@@ -1,6 +1,6 @@
 from flask import (
     Blueprint, current_app, redirect, request,
-    session, url_for)
+    session, url_for, jsonify)
 import json
 from urllib.parse import quote
 from .auth import get_logged_in_user_id
@@ -90,40 +90,44 @@ class GoogleAuth:
     @staticmethod
     @access_token_required
     def list_events(start, end, timezone, calendar_id):
-        # Have to manually % encode calendar_id using quote()
-        # since requests doesn't do it automatically
-        endpoint = f"https://www.googleapis.com/calendar/v3/calendars/{quote(calendar_id)}/events"
-        params=[("timeMin", start), ("timeMax", end), ("timeZone", timezone)]
-        access_token = session['credentials']['google']['access_token']
-        r = requests.get(
-            endpoint, params=params,
-            headers={"Authorization": f"Bearer {access_token}"}
-        )
-
-        if r.status_code == 401:  # Invalid credentials
-            access_token = GoogleAuth.get_new_access_token()
+        def make_request():
+            # Have to manually % encode calendar_id
+            endpoint = f"https://www.googleapis.com/calendar/v3/calendars/{quote(calendar_id)}/events"
+            params=[("timeMin", start), ("timeMax", end), ("timeZone", timezone)]
+            access_token = session['credentials']['google']['access_token']
             r = requests.get(
                 endpoint, params=params,
                 headers={"Authorization": f"Bearer {access_token}"}
             )
+            return r
 
-        return r.json()["items"]
+        r = make_request()
+
+        if r.status_code != 200:
+            r = GoogleAuth.handle_api_errors(r, make_request)
+            if r is None:
+                return {"message": "Couldn't process request for some reason"}, 500
+
+        return jsonify(r.json()["items"])
 
     @staticmethod
     @access_token_required
     def list_calendars():
-        endpoint = "https://www.googleapis.com/calendar/v3/users/me/calendarList"
-        access_token = session['credentials']['google']['access_token']
-        r = requests.get(
-            endpoint, headers={"Authorization": f"Bearer {access_token}"}
-        )
-
-        if r.status_code == 401:
-            access_token = GoogleAuth.get_new_access_token()
+        def make_request():
+            endpoint = "https://www.googleapis.com/calendar/v3/users/me/calendarList"
+            access_token = session['credentials']['google']['access_token']
             r = requests.get(
                 endpoint, headers={"Authorization": f"Bearer {access_token}"}
             )
+            return r
+
+        r = make_request()
         
+        if r.status_code != 200:
+            r = GoogleAuth.handle_api_errors(r.status_code, make_request)
+            if r is None:
+                return {"message": "Couldn't process request for some reason"}, 500
+
         cals = r.json()["items"]
         # Only going to return relevant information. 
         # Name and id of each calendar
@@ -133,6 +137,95 @@ class GoogleAuth:
             if cal.get("primary", False):
                 r_cals["primary"] = cal["summary"]
         return r_cals
+
+    @staticmethod
+    @access_token_required
+    def add_events(date_shifts, calendar_id):
+
+        def make_request(event_resource):
+            endpoint = f"https://www.googleapis.com/calendar/v3/calendars/{quote(calendar_id)}/events"
+            access_token = session['credentials']['google']['access_token']
+            r = requests.post(
+                    endpoint, headers={"Authorization": f"Bearer {access_token}"},
+                    json=event_resource
+                )
+            return r
+
+        def create_event_resource(date, shift, duration=None):
+                # If duration is None, this will be an all day event
+                if duration is None:
+                    return {
+                        "summary": shift,
+                        "start": {
+                            "date": date
+                        },
+                        "end": {
+                            "date": date
+                        }
+                    }
+
+                return {
+                    "summary": shift,
+                    "start": {
+                        "dateTime": date + "T" + duration["start_time"]
+                    },
+                    "end": {
+                        "dateTime": date + "T" + duration["end_time"]
+                    }
+                }
+
+        user = get_db().users.find({"_id": get_logged_in_user_id()})[0]
+        index = 0
+        for ds in json.loads(date_shifts):
+            date, shift = ds.split("_")
+
+            if user["shifts"][shift] == "all_day":
+                event_resource = create_event_resource(date, shift)
+                r = make_request(event_resource)
+            else:
+                duration = user["shifts"][shift]
+                event_resource = create_event_resource(date, shift, duration)
+                r = make_request(event_resource)
+
+            if r.status_code != 200:
+                r = GoogleAuth.handle_api_errors(
+                    r, lambda: make_request(event_resource)
+                )
+                # If even one event fails to be added, stop and
+                # just tell user that this and every event after
+                # this one couldn't be added 
+                if r is None:
+                    break
+
+            index += 1
+        else:
+            return {"success": "complete"}, 200
+
+        # An event couldn't be added
+        if index == 0:
+            return {"success": "fail"}, 500
+        else:
+            return {
+                "success": "partial",
+                "failedShifts": date_shifts[index:]
+            }, 200
+
+    @staticmethod
+    def handle_api_errors(request, make_request):
+        while code := request.status_code != 200:
+            # Invalid credentials
+            if code == 401:
+                GoogleAuth.get_new_access_token()
+            # Rate limit exceeded
+            elif code == 403 or code == 429:
+                pass
+            # Backend error
+            elif code == 500:
+                pass
+
+            request = make_request()
+        
+        return request
 
 
 @bp.route("/connect-to-google", methods=["GET"])

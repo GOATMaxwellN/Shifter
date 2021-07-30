@@ -5,8 +5,9 @@ import { getSelectedShift, concatDateShift } from "./shifts.js";
 // === Constants
 const GOOGLE_LIST_EVENTS_ENDPOINT = "http://127.0.0.1:5000/api/google-list-events";
 const GOOGLE_LIST_CALENDARS = "http://127.0.0.1:5000/api/google-list-calendars";
+const GOOGLE_ADD_SHIFT = "http://127.0.0.1:5000/api/google-add-shift";
 const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
-const OFFSET = getTimeZoneOffset();
+export const OFFSET = getTimeZoneOffset();
 const NAMES_OF_DAYS = `
     <span>Sunday</span>
     <span>Monday</span>
@@ -96,7 +97,7 @@ function drawCalendar(events) {
     function createDateBox(dateNum, noDate = false) {
         let dateBox = document.createElement("DIV");
         if (!noDate) {
-            dateBox.setAttribute("id", "day" + dateNum);
+            dateBox.setAttribute("id", "day-" + dateNum);
             dateBox.setAttribute("class", "calendar-date");
             dateBox.insertAdjacentText("afterbegin", dateNum);
             dateBox.addEventListener("click", addPendingShift);
@@ -135,7 +136,7 @@ function drawCalendar(events) {
         } else {
             start = new Date(v["start"]["date"] + "T00:00:00" + OFFSET);
         }
-        dateBox = document.getElementById("day" + start.getDate());
+        dateBox = document.getElementById("day-" + start.getDate());
         dateBox.innerHTML += `<div class="event">${v.summary}</div>`;
     });
 
@@ -284,7 +285,8 @@ function addPendingShift(e) {
     if (shift != '-1') {
         if (pendingShifts.length === 0) { CONFIRM_BTN.disabled = false; }
 
-        pendingShifts.push(concatDateShift(this.firstChild.textContent), shift);
+        let dayNum = this.getAttribute("id").split("-")[1];
+        pendingShifts.push(concatDateShift(dayNum, shift));
 
         let shiftEvent = document.createElement("DIV");
         shiftEvent.setAttribute("class", "event pending");
@@ -297,8 +299,30 @@ function addPendingShift(e) {
 
 
 function confirmPendingShifts() {
-    // TODO: implement
     CONFIRM_BTN.disabled = true;
-    pendingShifts = [];
+    showHideSpinner();
+
+    let xhr = new XMLHttpRequest();
+    xhr.responseType = "json";
+    let fd = new FormData();
+    fd.set("dateShifts", JSON.stringify(pendingShifts));
+    fd.set("calendarId", selectedCalendar)
+
+    xhr.onload = function() {
+        showHideSpinner();
+        if (this.response["success"] == "complete") {
+            // All Shifts were added successfully
+            pendingShifts = [];
+            // Removes pending animation
+            for (let s of document.querySelectorAll(".pending")) {
+                s.classList.remove("pending");
+            }
+        } else {
+            // TODO: Some Shifts couldn't be added
+        }
+    }
+
+    xhr.open("POST", GOOGLE_ADD_SHIFT);
+    xhr.send(fd);
 }
 
