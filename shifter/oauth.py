@@ -117,7 +117,7 @@ class GoogleAuth:
     def list_calendars():
         def make_request():
             endpoint = "https://www.googleapis.com/calendar/v3/users/me/calendarList"
-            params = [("fields", "items(id, summary, primary)")]
+            params = [("fields", "items(accessRole, id, summary, primary)")]
             access_token = session['credentials']['google']['access_token']
             r = requests.get(
                 endpoint, params=params,
@@ -128,7 +128,7 @@ class GoogleAuth:
         r = make_request()
         
         if r.status_code != 200:
-            r = GoogleAuth.handle_api_errors(r.status_code, make_request)
+            r = GoogleAuth.handle_api_errors(r, make_request)
             if r is None:
                 return {"message": "Couldn't process request for some reason"}, 500
 
@@ -137,6 +137,10 @@ class GoogleAuth:
         # work with directly and not need to parse anything
         r_cals = {}
         for cal in cals:
+            # If user does not have write access to calendar
+            # do not include in response
+            if cal["accessRole"] not in ("writer", "owner"):
+                continue
             r_cals[cal["summary"]] = cal["id"]
             if cal.get("primary", False):
                 r_cals["primary"] = cal["summary"]
