@@ -93,7 +93,9 @@ class GoogleAuth:
         def make_request():
             # Have to manually % encode calendar_id
             endpoint = f"https://www.googleapis.com/calendar/v3/calendars/{quote(calendar_id)}/events"
-            params=[("timeMin", start), ("timeMax", end), ("timeZone", timezone)]
+            params=[
+                ("timeMin", start), ("timeMax", end), ("timeZone", timezone),
+                ("fields", "items(summary, start, end)")]
             access_token = session['credentials']['google']['access_token']
             r = requests.get(
                 endpoint, params=params,
@@ -115,9 +117,11 @@ class GoogleAuth:
     def list_calendars():
         def make_request():
             endpoint = "https://www.googleapis.com/calendar/v3/users/me/calendarList"
+            params = [("fields", "items(id, summary, primary)")]
             access_token = session['credentials']['google']['access_token']
             r = requests.get(
-                endpoint, headers={"Authorization": f"Bearer {access_token}"}
+                endpoint, params=params,
+                headers={"Authorization": f"Bearer {access_token}"}
             )
             return r
 
@@ -129,8 +133,8 @@ class GoogleAuth:
                 return {"message": "Couldn't process request for some reason"}, 500
 
         cals = r.json()["items"]
-        # Only going to return relevant information. 
-        # Name and id of each calendar
+        # Maps name of the calendar to its id, which the client can
+        # work with directly and not need to parse anything
         r_cals = {}
         for cal in cals:
             r_cals[cal["summary"]] = cal["id"]
