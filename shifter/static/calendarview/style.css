@@ -369,19 +369,19 @@ header form {
     font-size: 1.2rem;
     font-weight: bold;
 }
-.prev-month-btn {
+.month-nav-btn {
+    height: 90%;
+    background-color: transparent;
+    padding: 0.3em;
+    cursor: pointer;
+}
+.month-nav-btn.prev {
     float: left;
     margin-left: 5px;
-    height: 90%;
-    background-color: transparent;
-    padding: 0.3em;
 }
-.next-month-btn {
+.month-nav-btn.next {
     float: right;
     margin-right: 5px;
-    height: 90%;
-    background-color: transparent;
-    padding: 0.3em;
 }
 .calendar-names-of-days {
     grid-column: 1 / 8;
@@ -436,8 +436,11 @@ header form {
     display: grid;
     z-index: 99;
     position: absolute;
-    width: 100%;
-    height: 100%;
+    width: 50px;
+    height: 50px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     place-items: center center;
 }
 .spinner-overlay.hide {
@@ -445,8 +448,8 @@ header form {
 }
 
 .spinner {
-    width: 50px;
-    height: 50px;
+    width: 100%;
+    height: 100%;
     border: 5px solid;
     border-color: rgb(205, 97, 85) grey grey grey;
     border-radius: 50%;

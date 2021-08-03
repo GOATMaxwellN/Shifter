@@ -13,6 +13,11 @@ class GoogleCalendar {
     calendars = {primary: "primary"};
     selectedCalendar = "primary";
 
+    /* Saves the last request made in this.drawEvents(). Useful for 
+    when user is quickly switching between months and I need to abort
+    the request in process */
+    curDrawEventsReq = new XMLHttpRequest();
+
     constructor() {
         /* Draws the calendar, which in turn calls this.drawEvents
         to place existing events on the calendar. */
@@ -33,18 +38,23 @@ class GoogleCalendar {
     /* Get events from user's Google Calendar and 
     draw them on the calendar. */
     drawEvents(calendarDiv) {
+        /* If user is switching between months quickly, this will abort
+        the last request which is most likely in progress. Most of
+        the time this will do nothing. */
+        this.curDrawEventsReq.abort();
+
         let calendarId = this.calendars[this.selectedCalendar];
-        let req = new XMLHttpRequest();
+        this.curDrawEventsReq = new XMLHttpRequest();
         let url = new URL(this.LIST_EVENTS_ENDPOINT);
         url.searchParams.append("timeMin", startOfMonth());
         url.searchParams.append("timeMax", endOfMonth());
         url.searchParams.append("timeZone", TIMEZONE);
         url.searchParams.append("calendarId", calendarId);
 
-        req.responseType = "json";
+        this.curDrawEventsReq.responseType = "json";
 
         // Place the events in the proper date box on the calendar
-        req.onload = function () {
+        this.curDrawEventsReq.onload = function () {
             let events = this.response;
             events.forEach(function (v, i, a) {
                 let start, dateBox;
@@ -56,11 +66,11 @@ class GoogleCalendar {
                 dateBox = calendarDiv.querySelector("#day-" + start.getDate());
                 dateBox.innerHTML += `<div class="event">${v.summary}</div>`;
             });
-            showHideSpinner() // Hides the spinner animation
+            hideSpinner() // Hides the spinner animation
         }
 
-        req.open("GET", url);
-        req.send();
+        this.curDrawEventsReq.open("GET", url);
+        this.curDrawEventsReq.send();
     }
 
     getCalendars() {
@@ -98,7 +108,7 @@ class GoogleCalendar {
         fd.set("calendarId", this.calendars[this.selectedCalendar]);
 
         xhr.onload = function () {
-            showHideSpinner();
+            hideSpinner();
             if (this.response["success"] == "complete") {
                 // All Shifts were added successfully
                 pendingShifts = [];
@@ -174,10 +184,16 @@ function getConnectedCalendar() {
 
 
 // Shows or hides the loading animation on the calendar
-function showHideSpinner() {
+function showSpinner() {
     document.querySelector(".spinner-overlay")
-        .classList.toggle("hide");
+        .classList.remove("hide");
 }
+
+function hideSpinner() {
+    document.querySelector(".spinner-overlay")
+        .classList.add("hide");
+}
+
 
 
 /* Called by a Calendar instance when they want
@@ -200,10 +216,10 @@ function drawCalendar() {
         let pMonth = document.createElement("BUTTON");
         pMonth.innerHTML = "<-- Previous month";
         pMonth.addEventListener("click", previousMonth);
-        pMonth.setAttribute("class", "prev-month-btn");
+        pMonth.setAttribute("class", "month-nav-btn prev");
         let nMonth = document.createElement("BUTTON");
         nMonth.innerHTML = "Next month -->";
-        nMonth.setAttribute("class", "next-month-btn");
+        nMonth.setAttribute("class", "month-nav-btn next");
         nMonth.addEventListener("click", nextMonth);
 
         monthBox.appendChild(pMonth); monthBox.appendChild(nMonth);
@@ -237,7 +253,7 @@ function drawCalendar() {
     let calendarDiv = document.querySelector(".calendar");
     let calendarFrag = new DocumentFragment();
     clearCalendar();
-    showHideSpinner();  // Show spinner animation
+    showSpinner();  // Show spinner animation
 
     // Initialize with month name and weekdays
     calendarFrag.append(createMonthBox(), createWeekBox());
@@ -369,7 +385,7 @@ function addPendingShift(e) {
 // Uses Calendar instance to add the Shifts to the actual calendar
 function confirmPendingShifts() {
     CONFIRM_BTN.disabled = true;
-    showHideSpinner();
+    showSpinner();
 
     calendar.addShifts();
 }
