@@ -190,10 +190,10 @@ function drawCalendar() {
         }
     }
 
-    function createMonthBox(monthName) {
+    function createMonthBox() {
         let monthBox = document.createElement("DIV");
         monthBox.setAttribute("class", "calendar-month");
-        monthBox.insertAdjacentText("afterbegin", monthName);
+        monthBox.insertAdjacentText("afterbegin", monthName + ' ' + year);
         return monthBox;
     }
 
@@ -220,13 +220,14 @@ function drawCalendar() {
     let daysInMonth = getDaysInMonth();
     let firstWeekday = displayedYearAndMonth.getDay();
     let monthName = displayedYearAndMonth.toLocaleDateString("en-US", { month: 'short' });
+    let year = displayedYearAndMonth.getFullYear();
     let calendarDiv = document.querySelector(".calendar");
     let calendarFrag = new DocumentFragment();
     clearCalendar();
     showHideSpinner();  // Show spinner animation
 
     // Initialize with month name and weekdays
-    calendarFrag.append(createMonthBox(monthName), createWeekBox());
+    calendarFrag.append(createMonthBox(), createWeekBox());
     // Offset the 1st of the month to the correct weekday
     if (firstWeekday !== 0) {
         for (let i = 0; i < firstWeekday; i++) {
