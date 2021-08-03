@@ -194,6 +194,19 @@ function drawCalendar() {
         let monthBox = document.createElement("DIV");
         monthBox.setAttribute("class", "calendar-month");
         monthBox.insertAdjacentText("afterbegin", monthName + ' ' + year);
+        
+        /* Also add the previous & next month buttons to
+        navigate between month */
+        let pMonth = document.createElement("BUTTON");
+        pMonth.innerHTML = "<-- Previous month";
+        pMonth.addEventListener("click", previousMonth);
+        pMonth.setAttribute("class", "prev-month-btn");
+        let nMonth = document.createElement("BUTTON");
+        nMonth.innerHTML = "Next month -->";
+        nMonth.setAttribute("class", "next-month-btn");
+        nMonth.addEventListener("click", nextMonth);
+
+        monthBox.appendChild(pMonth); monthBox.appendChild(nMonth);
         return monthBox;
     }
 

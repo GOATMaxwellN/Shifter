@@ -364,6 +364,24 @@ header form {
 .calendar-month {
     grid-column: 1 / 8;
     grid-row: 1 / 2;
+    padding: 0.3em 0;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+.prev-month-btn {
+    float: left;
+    margin-left: 5px;
+    height: 90%;
+    background-color: transparent;
+    padding: 0.3em;
+}
+.next-month-btn {
+    float: right;
+    margin-right: 5px;
+    height: 90%;
+    background-color: transparent;
+    padding: 0.3em;
 }
 .calendar-names-of-days {
     grid-column: 1 / 8;
