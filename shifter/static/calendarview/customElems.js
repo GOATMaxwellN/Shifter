@@ -1,6 +1,5 @@
 "use strict";
 import { deleteShift } from "./shifts.js";
-import { switchCalendar } from "./calendar.js";
 
 // === CUSTOM DROPDOWN MENU (SELECT) FOR SELECTING SHIFTS ===
 export function drawCustomShiftSelect() {
@@ -102,9 +101,9 @@ function closeSelect(e) {
 
 
 // ==== CUSTOM DROPDOWN MENU TO SELECT A CALENDAR ====
-export function drawCustomCalendarSelect() {
+export function drawCustomCalendarSelect(calendars) {
     // Get underlying <select> with calendar names and our container
-    let ogSel = document.querySelector(".custom-select-calendars select");
+    // let ogSel = document.querySelector(".custom-select-calendars select");
     let selCont = document.querySelector(".custom-select-calendars");
 
     // Element that will open dropdown menu to select a calendar
@@ -115,23 +114,28 @@ export function drawCustomCalendarSelect() {
     // Menu that holds the calendar names
     let calsList = document.createElement("DIV");
     calsList.setAttribute("class", "calendar-list hide");
-    /* Iterate over underlying <select> and create the custom options
-    with the calendar names */
-    for (let i = 0; i < ogSel.length; i++) {
-        let calName = ogSel.options[i].innerHTML;
+
+    /* Iterate over passed in calendars object and 
+    add the calendar to the dropdown menu */
+    for (let calName in calendars) {
+        /* Skip 'primary' property, it's only used to
+        identify the name of the primary calendar */
+        if (calName === "primary") { continue; }
+
         let calOpt = document.createElement("DIV");
         calOpt.innerHTML = calName;
-        if (ogSel.options[i].value === "primary") {
+        if (calendars["primary"] === calName) {
             calOpt.setAttribute("class", "calendar-option selected-calendar");
         } else {
             calOpt.setAttribute("class", "calendar-option");
         }
         calOpt.setAttribute("value", calName);
-        calOpt.addEventListener("click", switchCalendar);
+        // 'this' points to a *Calendar class in calendars.js
+        calOpt.addEventListener("click", this.switchCalendar.bind(this));
         calOpt.addEventListener("click", highlightSelectedCalendar);
         calsList.appendChild(calOpt);
     }
-    
+
     // Allow openElem to toggle viewing of the calsList
     openElem.addEventListener("click", function() {
         calsList.classList.toggle("hide");

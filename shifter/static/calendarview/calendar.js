@@ -2,12 +2,144 @@
 import { drawCustomCalendarSelect } from "./customElems.js";
 import { getSelectedShift, concatDateShift } from "./shifts.js";
 
+
+// Class that is instantiated when user is viewing their google calendar
+class GoogleCalendar {
+    // Endpoints used
+    LIST_EVENTS_ENDPOINT = "http://127.0.0.1:5000/api/google-list-events";
+    LIST_CALENDARS_ENDPOINT = "http://127.0.0.1:5000/api/google-list-calendars";
+    ADD_SHIFT_ENDPOINT = "http://127.0.0.1:5000/api/google-add-shift";
+
+    calendars = {primary: "primary"};
+    selectedCalendar = "primary";
+
+    constructor() {
+        /* Draws the calendar, which in turn calls this.drawEvents
+        to place existing events on the calendar. */
+        this.drawCalendar();
+
+        /* Set this.calendars to an object containing all the user's
+        calendars and draw a dropdown menu to allow user to switch
+        between calendars */
+        this.getCalendars();
+    }
+
+    /* This just calls the global drawCalendar() that has 'this'
+    binded to an instance of this class */
+    drawCalendar() {
+        drawCalendar.call(this);
+    }
+
+    /* Get events from user's Google Calendar and 
+    draw them on the calendar. */
+    drawEvents(calendarDiv) {
+        let calendarId = this.calendars[this.selectedCalendar];
+        let req = new XMLHttpRequest();
+        let url = new URL(this.LIST_EVENTS_ENDPOINT);
+        url.searchParams.append("timeMin", startOfMonth());
+        url.searchParams.append("timeMax", endOfMonth());
+        url.searchParams.append("timeZone", TIMEZONE);
+        url.searchParams.append("calendarId", calendarId);
+
+        req.responseType = "json";
+
+        // Place the events in the proper date box on the calendar
+        req.onload = function () {
+            let events = this.response;
+            events.forEach(function (v, i, a) {
+                let start, dateBox;
+                if ("dateTime" in v["start"]) {
+                    start = new Date(v["start"]["dateTime"]);
+                } else {
+                    start = new Date(v["start"]["date"] + "T00:00:00" + OFFSET);
+                }
+                dateBox = calendarDiv.querySelector("#day-" + start.getDate());
+                dateBox.innerHTML += `<div class="event">${v.summary}</div>`;
+            });
+            showHideSpinner() // Hides the spinner animation
+        }
+
+        req.open("GET", url);
+        req.send();
+    }
+
+    getCalendars() {
+        let that = this;
+        let req = new XMLHttpRequest();
+        req.responseType = "json";
+
+        /* If succesful, set this.calendars to the response
+        and draw the calendars dropdown menu */
+        req.onload = function () {
+            //addCalendars(this.response);
+            that.calendars = this.response;
+            drawCustomCalendarSelect.call(that, that.calendars);
+        }
+
+        req.open("GET", this.LIST_CALENDARS_ENDPOINT);
+        req.send();
+    }
+
+    /* Event handler for when a calendar is selected from the dropdown
+    menu. The 'this' object will still refer to an instance of this class,
+    because it was binded when setting the event listener. */
+    switchCalendar(e) {
+        this.selectedCalendar = e.currentTarget.getAttribute("value");
+        this.drawCalendar();
+    }
+
+    /* Called by confirmPendingShifts() when user decides to add their
+    'pending' Shifts to their calendar. */
+    addShifts() {
+        let xhr = new XMLHttpRequest();
+        xhr.responseType = "json";
+        let fd = new FormData();
+        fd.set("dateShifts", JSON.stringify(pendingShifts));
+        fd.set("calendarId", this.calendars[this.selectedCalendar]);
+
+        xhr.onload = function () {
+            showHideSpinner();
+            if (this.response["success"] == "complete") {
+                // All Shifts were added successfully
+                pendingShifts = [];
+                // Removes pending animation
+                for (let s of document.querySelectorAll(".pending")) {
+                    s.classList.remove("pending");
+                }
+            } else {
+                // TODO: Some Shifts couldn't be added
+            }
+        }
+
+        xhr.open("POST", this.ADD_SHIFT_ENDPOINT);
+        xhr.send(fd);
+    }
+}
+
+
+// Class that is instantiated when user is viewing their outlook calendar
+// TODO: yet to be implemented
+class OutlookCalendar {
+
+    constructor() {
+        this.drawCalendar();
+    }
+    
+    drawCalendar() {
+        drawCalendar.call(this);
+    }
+    
+    drawEvents() {}
+
+    addShifts() {}
+}
+
+
 // === Constants
-const GOOGLE_LIST_EVENTS_ENDPOINT = "http://127.0.0.1:5000/api/google-list-events";
-const GOOGLE_LIST_CALENDARS = "http://127.0.0.1:5000/api/google-list-calendars";
-const GOOGLE_ADD_SHIFT = "http://127.0.0.1:5000/api/google-add-shift";
 const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
 export const OFFSET = getTimeZoneOffset();
+
+// Used when drawing the calendar
 const NAMES_OF_DAYS = `
     <span>Sunday</span>
     <span>Monday</span>
@@ -17,66 +149,44 @@ const NAMES_OF_DAYS = `
     <span>Friday</span>
     <span>Saturday</span>
 `;
+
+// Button that adds their 'pending' Shifts to their calendar
 const CONFIRM_BTN = document.querySelector(".confirm-btn");
 CONFIRM_BTN.addEventListener("click", confirmPendingShifts);
 
-let calendars;  // Most calendar services allow one account to have several calendars
-let calendarVendor;
-let selectedCalendar;
-
+// Holds the current Calendar instance to use
+let calendar;
+// Holds the pending Shifts for confirmation
 let pendingShifts = [];
+
 let displayedYearAndMonth = new Date();
 displayedYearAndMonth.setDate(1);
-
-getConnectedCalendar();
 
 
 function getConnectedCalendar() {
     let cal = document.querySelector(".calendar").getAttribute("id");
     if (cal === "google") {
-        calendarVendor = "google";
-        selectedCalendar = "primary";
-        googleListEvents(startOfMonth(), endOfMonth(), selectedCalendar);
-        googleListCalendars();
+        calendar = new GoogleCalendar();
     } else if (cal === "outlook") {
-        // TODO: something for outlook
+        calendar = new OutlookCalendar();
     }
 }
 
 
-function addCalendars(cals) {
-    calendars = cals;
-    let calsSel = document.querySelector(".custom-select-calendars select");
-    for (let cal in calendars) {
-        if (cal === "primary") { continue; }
-
-        let opt = document.createElement("OPTION");
-        // Will show name of the calendar
-        opt.innerHTML = cal;
-        /* Will hold id of the calendar in value attribute. If 
-        calendar is the primary calendar, id can be just 'primary' */
-        if (calendars.primary === cal) {
-            opt.setAttribute("value", "primary");
-        } else {
-            opt.setAttribute("value", calendars[cal]);
-        }
-        calsSel.append(opt);
-    }
-    drawCustomCalendarSelect();
-}
-
-
+// Shows or hides the loading animation on the calendar
 function showHideSpinner() {
     document.querySelector(".spinner-overlay")
         .classList.toggle("hide");
 }
 
 
-function drawCalendar(events) {
+/* Called by a Calendar instance when they want
+to (re)draw thecalendar */
+function drawCalendar() {
 
     function clearCalendar() {
-        while (calendar.firstChild) {
-            calendar.removeChild(calendar.lastChild);
+        while (calendarDiv.firstChild) {
+            calendarDiv.removeChild(calendarDiv.lastChild);
         }
     }
 
@@ -110,9 +220,10 @@ function drawCalendar(events) {
     let daysInMonth = getDaysInMonth();
     let firstWeekday = displayedYearAndMonth.getDay();
     let monthName = displayedYearAndMonth.toLocaleDateString("en-US", { month: 'short' });
-    let calendar = document.querySelector(".calendar");
+    let calendarDiv = document.querySelector(".calendar");
     let calendarFrag = new DocumentFragment();
     clearCalendar();
+    showHideSpinner();  // Show spinner animation
 
     // Initialize with month name and weekdays
     calendarFrag.append(createMonthBox(monthName), createWeekBox());
@@ -126,29 +237,11 @@ function drawCalendar(events) {
     for (let i = 1; i <= daysInMonth; i++) {
         calendarFrag.append(createDateBox(i));
     }
-    calendar.appendChild(calendarFrag);
+    calendarDiv.appendChild(calendarFrag);
 
-    // Populate the date boxes with events in them
-    events.forEach(function (v, i, a) {
-        let start, dateBox;
-        if ("dateTime" in v["start"]) {
-            start = new Date(v["start"]["dateTime"]);
-        } else {
-            start = new Date(v["start"]["date"] + "T00:00:00" + OFFSET);
-        }
-        dateBox = document.getElementById("day-" + start.getDate());
-        dateBox.innerHTML += `<div class="event">${v.summary}</div>`;
-    });
-
-    showHideSpinner()  // Removes spinner animation
-}
-
-
-export function switchCalendar(e) {
-    if (calendarVendor == "google") {
-        selectedCalendar = calendars[e.target.getAttribute("value")];
-        googleListEvents(startOfMonth(), endOfMonth(), selectedCalendar);
-    }
+    // Get and draw events with user's calendar
+    // Will also hide the spinner animation when done
+    this.drawEvents(calendarDiv);
 }
 
 
@@ -164,11 +257,7 @@ function nextMonth() {
         displayedYearAndMonth.setFullYear(year, month);
     }
 
-    let min = startOfMonth(), max = endOfMonth();
-
-    if (calendarVendor === "google") {
-        googleListEvents(min, max, selectedCalendar);
-    }
+    calendar.drawCalendar();
 }
 
 
@@ -184,11 +273,7 @@ function previousMonth() {
         displayedYearAndMonth.setFullYear(year, month);
     }
 
-    let min = startOfMonth(), max = endOfMonth();
-
-    if (calendarVendor === "google") {
-        googleListEvents(min, max, selectedCalendar);
-    }
+    calendar.drawCalendar();
 }
 
 
@@ -219,41 +304,6 @@ function getDaysInMonth() {
     ).getDate();
 }
 
-
-function googleListEvents(min, max, calendarId) {
-    showHideSpinner();  // Show spinner animation on top of calendar
-
-    let req = new XMLHttpRequest();
-    let url = new URL(GOOGLE_LIST_EVENTS_ENDPOINT);
-    url.searchParams.append("timeMin", min);
-    url.searchParams.append("timeMax", max);
-    url.searchParams.append("timeZone", TIMEZONE);
-    url.searchParams.append("calendarId", calendarId);
-
-    req.responseType = "json";
-    req.onload = function () {
-        drawCalendar(this.response);
-    }
-
-    req.open("GET", url);
-    req.send();
-}
-
-
-function googleListCalendars() {
-    let req = new XMLHttpRequest();
-    req.responseType = "json";
-
-    // If succesful, add calendars to CALENDARS constant
-    req.onload = function() {
-        addCalendars(this.response);
-    }
-
-    req.open("GET", GOOGLE_LIST_CALENDARS);
-    req.send();
-}
-
-
 function getTimeZoneOffset() {
     let offset = new Date().getTimezoneOffset() / 60;
     let sign;
@@ -279,7 +329,9 @@ function getTimeZoneOffset() {
     return sign + `${Math.abs(offset)}:00`;
 }
 
-// === Adding shifts to the calendar
+
+/* Visually adds the pending Shift to the calendar and
+pushes it to the pendingShifts array */
 function addPendingShift(e) {
     let shift = getSelectedShift();
     if (shift != '-1') {
@@ -298,31 +350,14 @@ function addPendingShift(e) {
 }
 
 
+// Uses Calendar instance to add the Shifts to the actual calendar
 function confirmPendingShifts() {
     CONFIRM_BTN.disabled = true;
     showHideSpinner();
 
-    let xhr = new XMLHttpRequest();
-    xhr.responseType = "json";
-    let fd = new FormData();
-    fd.set("dateShifts", JSON.stringify(pendingShifts));
-    fd.set("calendarId", selectedCalendar)
-
-    xhr.onload = function() {
-        showHideSpinner();
-        if (this.response["success"] == "complete") {
-            // All Shifts were added successfully
-            pendingShifts = [];
-            // Removes pending animation
-            for (let s of document.querySelectorAll(".pending")) {
-                s.classList.remove("pending");
-            }
-        } else {
-            // TODO: Some Shifts couldn't be added
-        }
-    }
-
-    xhr.open("POST", GOOGLE_ADD_SHIFT);
-    xhr.send(fd);
+    calendar.addShifts();
 }
 
+
+/* Gets which calendar to show the user first */
+getConnectedCalendar();
