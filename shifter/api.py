@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify, session
-from werkzeug.wrappers import response
 from .auth import get_logged_in_user_id
 from .oauth import GoogleAuth
 from .db import get_db

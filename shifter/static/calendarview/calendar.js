@@ -259,6 +259,7 @@ function drawCalendar() {
 }
 
 
+// View the next month in the user's calendar
 function nextMonth() {
     let month = displayedYearAndMonth.getMonth();
     let year = displayedYearAndMonth.getFullYear();
@@ -275,6 +276,7 @@ function nextMonth() {
 }
 
 
+// View the previous month in the user's calendar
 function previousMonth() {
     let month = displayedYearAndMonth.getMonth();
     let year = displayedYearAndMonth.getFullYear();
