@@ -155,10 +155,12 @@ export function getSelectedShift() {
 
 
 export function concatDateShift(day, shiftName) {
-    let month, year, dateShift;
+    let monthYear, month, year, dateShift;
     if (day.length < 2) { day = '0' + day; }
-    month = MONTH_TO_NUM[document.querySelector(".calendar-month").getAttribute("value")];
-    year = "2021";  // TODO: get user requested year
+    
+    monthYear = document.querySelector(".calendar-month").getAttribute("value").split("_");
+    month = MONTH_TO_NUM[monthYear[0]]
+    year = monthYear[1];
 
     dateShift = `${year}-${month}-${day}_${shiftName}`;
     return dateShift;

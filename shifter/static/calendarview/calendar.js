@@ -209,7 +209,7 @@ function drawCalendar() {
     function createMonthBox() {
         let monthBox = document.createElement("DIV");
         monthBox.setAttribute("class", "calendar-month");
-        monthBox.setAttribute("value", monthName);
+        monthBox.setAttribute("value", monthName + '_' + year);
         monthBox.insertAdjacentText("afterbegin", monthName + ' ' + year);
         
         /* Also add the previous & next month buttons to
@@ -372,7 +372,6 @@ function addPendingShift(e) {
 
         let dayNum = this.getAttribute("id").split("-")[1];
         pendingShifts.push(concatDateShift(dayNum, shift));
-        console.log(pendingShifts);
 
         let shiftEvent = document.createElement("DIV");
         shiftEvent.setAttribute("class", "event pending");
