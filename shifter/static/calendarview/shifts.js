@@ -163,32 +163,3 @@ export function concatDateShift(day, shiftName) {
     dateShift = `${year}-${month}-${day}_${shiftName}`;
     return dateShift;
 } 
-
-
-function addPendingShiftToCalendar(e) {
-    let shift = getSelectedShift();
-    if (shift !== '-1') {
-        let event = document.createElement("DIV");
-        event.setAttribute("class", "event pending");
-        event.innerHTML = shift;
-        this.appendChild(event);
-        pendingShifts.push(concatDateShift(this, shift));
-    } else {
-        alert("No Shift is selected!");
-    }
-}
-
-
-function confirmPendingShifts() {
-    let xhr = new XMLHttpRequest();
-
-    xhr.onload = function() {
-        pendingShifts = [];
-        for (let date in document.querySelectorAll(".pending")) {
-            date.classList.remove("pending");
-        }
-    }
-
-    xhr.open("POST", ADD_SHIFT_ENDPOINT);
-    xhr.send(pendingShifts);
-}
