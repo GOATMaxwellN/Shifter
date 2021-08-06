@@ -12,10 +12,12 @@
     <body>
         <header>
             <h1>Shifter</h1>
-            <p>Hello, {{ username }}</p>
-            <form action="http://127.0.0.1:5000/auth/logout" method="get">
-                <input type="submit" value="Logout" />
-            </form>
+            <div class="user-config">
+                <p>Hello, {{ username }}</p>
+                <form action="http://127.0.0.1:5000/auth/logout" method="get">
+                    <input type="submit" value="Logout" />
+                </form>
+            </div>
         </header>
         <section class="content">
             <div class="config-values">
@@ -55,9 +57,7 @@
                 <div id="select-shift-view">
                     <button class="create-shift-btn">+ Create a Shift</button>
                     <div class="custom-shift-select">
-                        <select title="Select a shift" name="shift" id="shifts-dropdown-list" class="shifts-dropdown-list">
-
-                        </select>
+                        <select title="Select a shift" name="shift" id="shifts-dropdown-list" class="shifts-dropdown-list"></select>
                     </div>
                 </div>
                 <div id="create-shift-view">

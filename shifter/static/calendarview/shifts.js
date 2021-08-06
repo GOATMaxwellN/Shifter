@@ -159,7 +159,7 @@ export function concatDateShift(day, shiftName) {
     if (day.length < 2) { day = '0' + day; }
     
     monthYear = document.querySelector(".calendar-month").getAttribute("value").split("_");
-    month = MONTH_TO_NUM[monthYear[0]]
+    month = MONTH_TO_NUM[monthYear[0]];
     year = monthYear[1];
 
     dateShift = `${year}-${month}-${day}_${shiftName}`;

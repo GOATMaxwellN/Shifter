@@ -242,7 +242,7 @@ function drawCalendar() {
             dateBox.insertAdjacentText("afterbegin", dateNum);
             dateBox.addEventListener("click", addPendingShift);
         } else {
-            dateBox.setAttribute("class", "no-date");
+            dateBox.setAttribute("class", "calendar-date");
         }
         return dateBox;
     }
