@@ -60,6 +60,10 @@ section {
     margin-top: 2em;
 }
 
+.auth-box form input {
+    text-align: center;
+}
+
 .auth-box form input[type="submit"] {
     margin-top: 2.5em;
     color: white;
