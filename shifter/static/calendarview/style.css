@@ -30,7 +30,7 @@ body {
 
 /* Header with Shifter and user greeting */
 header {
-    height: 10%;
+    
     display: grid;
     grid-template-columns: 90% 10%;
 }
