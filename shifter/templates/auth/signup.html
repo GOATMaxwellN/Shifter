@@ -11,3 +11,7 @@
 {% block submit %}
     <input type="submit" value="Sign up">
 {% endblock %}
+
+{% block link %}
+    <a class="link" href="{{ url_for('auth.login') }}">Already have an account? Log in!</a>
+{% endblock %}

@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>{% block title %}{% endblock %}</title>
-        <link rel="stylesheet" href={{ url_for("static", filename="auth/style.css") }}>
+        <link rel="stylesheet" href="{{ url_for('static', filename='auth/style.css') }}">
     </head>
     <body>
         <header>
@@ -10,15 +10,18 @@
             {% block header %}{% endblock %}
         </header>
         <section>
-            <h3>{% block auth_type %}{% endblock %}</h3>
-            {% if error is defined %}<p>{{ error }}</p>{% endif %}
-            <form action="" method="post">
-                <label for="username">Username:</label>
-                <input type="text" name="username" id="username" required>
-                <label for="password">Password:</label>
-                <input type="password" name="password" id="password" required>
-                {% block submit %}{% endblock %}
-            </form>
+            <div class="auth-box">
+                <h3>{% block auth_type %}{% endblock %}</h3>
+                {% if error is defined %}<p>{{ error }}</p>{% endif %}
+                <form action="" method="post">
+                    <label for="username">Username:</label>
+                    <input type="text" name="username" id="username" required>
+                    <label for="password">Password:</label>
+                    <input type="password" name="password" id="password" required>
+                    {% block submit %}{% endblock %}
+                </form>
+            </div>
+            {% block link %}{% endblock %}
         </section>
     </body>
 </html>

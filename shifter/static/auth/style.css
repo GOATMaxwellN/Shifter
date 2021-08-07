@@ -1,0 +1,80 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    display: grid;
+    grid-template-rows: minmax(min-content, 20%) 1fr;
+}
+
+header {
+    display: grid;
+    align-items: center;
+}
+
+header h1 {
+    color: rgb(205, 97, 85);
+    font-size: 4em;
+    text-align: center;
+    margin: auto 0;
+}
+
+section {
+    display: grid;
+    grid-auto-flow: row;
+    grid-auto-rows: min-content;
+    justify-items: center;
+    align-items: start;
+    row-gap: 2em;
+}
+
+.auth-box {
+    border-radius: 10%;
+    border: 1px solid grey;
+    text-align: center;
+    padding: 2em 3em;
+    margin-top: 4em;
+}
+
+.auth-box h3 {
+    font-size: 2em;
+}
+
+.auth-box form {
+    display: grid;
+    grid-auto-flow: row;
+}
+
+.auth-box form label[for="username"] {
+    margin-top: 2em;
+}
+
+.auth-box form label[for="password"] {
+    margin-top: 2em;
+}
+
+.auth-box form input[type="submit"] {
+    margin-top: 2.5em;
+    color: white;
+    background-color: rgb(205, 97, 85);
+}
+
+.auth-box form input[type="submit"]:hover {
+    background-color: rgb(190, 91, 80);
+}
+
+.link, .link:visited {
+    font-size: 1.1em;
+    color: black;
+}
+
+.link:active {
+    color: rgb(205, 97, 85);
+}
