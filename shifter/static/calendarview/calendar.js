@@ -164,6 +164,9 @@ const NAMES_OF_DAYS = `
 const CONFIRM_BTN = document.querySelector(".confirm-btn");
 CONFIRM_BTN.addEventListener("click", confirmPendingShifts);
 
+document.querySelector(".modal-wrapper")
+    .addEventListener("click", hideAllCalendarsModal);
+
 // Holds the current Calendar instance to use
 let calendar;
 // Holds the pending Shifts for confirmation
@@ -389,6 +392,18 @@ function confirmPendingShifts() {
     showSpinner();
 
     calendar.addShifts();
+}
+
+
+// Show modal dialog that shows all the user's connected calendars
+export function showAllCalendarsModal(e) {
+    document.querySelector(".modal-wrapper").style.display = "block";
+}
+
+
+function hideAllCalendarsModal(e) {
+    if (document.querySelector(".modal-content").contains(e.target)) { return; }
+    document.querySelector(".modal-wrapper").style.display = "none";
 }
 
 

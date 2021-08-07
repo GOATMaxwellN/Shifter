@@ -116,6 +116,10 @@ header .user-config input {
     text-align: center;
 }
 
+.custom-select-calendars .calendar-list .calendar-option.all-calendars {
+    background-color: rgb(243, 133, 121);
+}
+
 .custom-select-calendars .calendar-list .calendar-option:hover {
     background-color: rgb(190, 91, 80);
 }
@@ -470,4 +474,60 @@ header .user-config input {
 @keyframes rotation {
     from { transform: rotate(0deg); }
     to { transform: rotate(359deg); }
+}
+
+.modal-wrapper {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+    z-index: 99;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    border: 1px solid #888;
+    width: 50%;
+    height: 40%;
+    overflow-y: auto;
+}
+
+.modal-content h3 {
+    text-align: center;
+    font-size: 2em;
+    padding: 0.3em;
+    color: rgb(157, 76, 67);
+}
+
+.modal-content ul {
+    list-style-type: none;
+}
+
+.modal-content ul li {
+    font-size: 1.5em;
+    padding: 0.5em 0;
+    margin: 1em;
+    text-align: center;
+    border-bottom: 1px solid grey;
+}
+
+.modal-content ul li a {
+    color: rgb(205, 97, 85);
+    text-decoration: none;
+}
+
+.modal-content ul li a:hover {
+    text-decoration: underline;
+}
+
+.modal-content ul li button {
+    position: relative;
+    left: 2em;
+    padding: 0.2em;
+    background-color: rgb(205, 97, 85);
+    border: 3px outset rgb(157, 76, 67);
 }

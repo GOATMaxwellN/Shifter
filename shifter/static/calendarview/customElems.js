@@ -1,4 +1,5 @@
 "use strict";
+import { showAllCalendarsModal } from "./calendar.js";
 import { deleteShift } from "./shifts.js";
 
 // === CUSTOM DROPDOWN MENU (SELECT) FOR SELECTING SHIFTS ===
@@ -135,6 +136,13 @@ export function drawCustomCalendarSelect(calendars) {
         calOpt.addEventListener("click", highlightSelectedCalendar);
         calsList.appendChild(calOpt);
     }
+
+    // Last option to allow user to look at all their connected calendars
+    let calOpt = document.createElement("DIV");
+    calOpt.innerHTML = "All calendars:";
+    calOpt.setAttribute("class", "calendar-option all-calendars");
+    calOpt.addEventListener("click", showAllCalendarsModal);
+    calsList.appendChild(calOpt);
 
     // Allow openElem to toggle viewing of the calsList
     openElem.addEventListener("click", function() {
