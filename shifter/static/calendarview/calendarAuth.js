@@ -13,15 +13,12 @@ if (document.querySelector(".connect-btns-wrapper")) {
     } catch (e) {}  // Catching TypeError if this element does not exist
 }
 
-
-function connectToGoogle() {
-    window.location.href = "http://127.0.0.1:5000/oauth/connect-to-google";
+for (let btn of document.querySelector(".config-connect-btns-wrapper").children) {
+    btn.addEventListener("click", showNameCalendarModal);
 }
 
-
-function connectToOutlook() {
-
-}
+const CONNECT_TO_GOOGLE_URL = "http://127.0.0.1:5000/oauth/connect-to-google";
+const CONNECT_TO_OUTLOOK_URL = null;
 
 
 function dismissErrMsg() {
@@ -32,3 +29,16 @@ function dismissErrMsg() {
 }
 
 
+/* Shows modal view that asks user what to name the calendar
+they're about to connect. Also sets the action of the <form>
+inside the modal to the correct url. */
+function showNameCalendarModal(e) {
+    let modal = document.querySelector(".name-calendar-modal");
+    if (this.getAttribute("value") === "google") {
+        // This is the <form> elem
+        modal.children[1].setAttribute("action", CONNECT_TO_GOOGLE_URL);
+    } else if (this.getAttribute("value") === "outlook") {
+        modal.children[1].setAttribute("action", CONNECT_TO_OUTLOOK_URL);
+    }
+    modal.style.display = "block";
+}

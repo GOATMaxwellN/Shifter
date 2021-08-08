@@ -80,11 +80,11 @@ def signup():
                     "salt": salt,
                     "shifts": {},
                     "connected_calendars": {
-                        "Google": False,
-                        "Outlook": False,
+                        "Google": [],
+                        "Outlook": [],
                     },
                     "refresh_tokens": {
-                        "Google": None,
+                        "Google": {},
                     }
                 })
                 return redirect(url_for("auth.login", newly_registered=True))

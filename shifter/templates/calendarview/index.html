@@ -25,7 +25,7 @@
                     <!-- Custom dropdown menu will be created here if the user's calendar vendor allows for multiple calendars -->
                 </div>
                 <div class="config-connect-btns-wrapper">
-                    <button class="google-style" type="button"><i>&#xf1a0</i>Google</button>
+                    <button value=""class="google-style" type="button"><i>&#xf1a0</i>Google</button>
                     <button class="outlook-style" type="button"><i>&#xe801</i>Outlook</button>
                 </div>
                 <button class="confirm-btn" type="button" disabled>Confirm</button>
@@ -33,10 +33,10 @@
             <div class="calendar-wrapper">
                 <div class="calendar">
                     <!-- Display user's Google calendar -->
-                    {% if calendar != None %}
-                        {% if calendar == "Google" %}
+                    {% if calendar_vendor != None %}
+                        {% if calendar_vendor == "Google" %}
                         <script>document.querySelector(".calendar").setAttribute("id", "google")</script>
-                        {% elif calendar == "Outlook" %}
+                        {% elif calendar_vendor == "Outlook" %}
                         <script>document.querySelector(".calendar").setAttribute("id", "outlook")</script>
                         {% endif %}
                     {% else %}
@@ -81,7 +81,8 @@
                 </div>
             </div>
         </section>
-        <div class="modal-wrapper">
+        <!-- Some modal views -->
+        <div class="all-calendars-modal modal-wrapper">
             <div class="modal-content">
                 <h3>All calendars</h3>
                 <!-- customElems() will add the html to show the calendars -->
@@ -94,6 +95,15 @@
                     <li><a href="">Google 1</a><button>DEL</button></li>
                     <li><a href="">Google 1</a><button>DEL</button></li>
                 </ul>
+            </div>
+        </div>
+        <div class="name-calendar-modal modal-wrapper">
+            <div class="modal-content">
+                <h3>What should we name the calendar once connected?</h3>
+                <form action="" method="get">
+                    <input type="text" name="calendar-name" id="calendar-name" required>
+                    <input type="submit" value="Confirm">
+                </form>
             </div>
         </div>
     </body>

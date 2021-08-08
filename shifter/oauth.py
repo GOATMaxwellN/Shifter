@@ -59,10 +59,19 @@ class GoogleAuth:
         return r.json()
 
     @staticmethod
+    def get_access_token():
+        cur_cal_name = session["current_calendar"]["name"]
+
+        user = get_db().users.find({"_id": get_logged_in_user_id()})[0]
+        token = user["access_tokens"]["Google"][cur_cal_name]
+        return token
+
+    @staticmethod
     def get_refresh_token():
-        db = get_db()
-        user = db.users.find({"_id": get_logged_in_user_id()})[0]
-        return user["refresh_tokens"]["Google"]
+        cur_cal_name = session["current_calendar"]["name"]
+
+        user = get_db().users.find({"_id": get_logged_in_user_id()})[0]
+        return user["refresh_tokens"]["Google"][cur_cal_name]
 
     @classmethod
     def get_new_access_token(cls):
@@ -82,13 +91,23 @@ class GoogleAuth:
             print("TOKEN REFRESH DIDN'T WORK", r.json())
             return
 
-        # Update the access token in the session and return
+        # Update the access token in the database and return
         access_token = r.json()["access_token"]
-        session["credentials"]["google"]["access_token"] = access_token
+        current_calendar = session["current_calendar"]["name"]
+        # session["credentials"]["google"]["access_token"] = access_token
+        print("updating access_token entry with", access_token)
+        get_db().users.update_one(
+            {"_id": get_logged_in_user_id()},
+            {
+                "$set": {
+                    f"access_tokens.Google.{current_calendar}": access_token
+                }
+            }
+        )
         return access_token
 
     @staticmethod
-    @access_token_required
+    # @access_token_required
     def list_events(start, end, timezone, calendar_id):
         def make_request():
             # Have to manually % encode calendar_id
@@ -96,7 +115,7 @@ class GoogleAuth:
             params=[
                 ("timeMin", start), ("timeMax", end), ("timeZone", timezone),
                 ("fields", "items(summary, start, end)")]
-            access_token = session['credentials']['google']['access_token']
+            access_token = GoogleAuth.get_access_token()
             r = requests.get(
                 endpoint, params=params,
                 headers={"Authorization": f"Bearer {access_token}"}
@@ -113,12 +132,12 @@ class GoogleAuth:
         return jsonify(r.json()["items"])
 
     @staticmethod
-    @access_token_required
+    # @access_token_required
     def list_calendars():
         def make_request():
             endpoint = "https://www.googleapis.com/calendar/v3/users/me/calendarList"
             params = [("fields", "items(accessRole, id, summary, primary)")]
-            access_token = session['credentials']['google']['access_token']
+            access_token = GoogleAuth.get_access_token()
             r = requests.get(
                 endpoint, params=params,
                 headers={"Authorization": f"Bearer {access_token}"}
@@ -147,12 +166,12 @@ class GoogleAuth:
         return r_cals
 
     @staticmethod
-    @access_token_required
+    # @access_token_required
     def add_events(date_shifts, calendar_id):
 
         def make_request(event_resource):
             endpoint = f"https://www.googleapis.com/calendar/v3/calendars/{quote(calendar_id)}/events"
-            access_token = session['credentials']['google']['access_token']
+            access_token = GoogleAuth.get_access_token()
             r = requests.post(
                     endpoint, headers={"Authorization": f"Bearer {access_token}"},
                     json=event_resource
@@ -220,9 +239,11 @@ class GoogleAuth:
 
     @staticmethod
     def handle_api_errors(request, make_request):
-        while code := request.status_code != 200:
+        while (code := request.status_code) != 200:
+            print("Had to handle this error:", request.json())
             # Invalid credentials
             if code == 401:
+                print("401 error handling")
                 GoogleAuth.get_new_access_token()
             # Rate limit exceeded
             elif code == 403 or code == 429:
@@ -238,34 +259,51 @@ class GoogleAuth:
 
 @bp.route("/connect-to-google", methods=["GET"])
 def connect_to_google():
+    # Temporary session entry to store what the user wants to name 
+    # the calendar they're about to connect
+    session["calendar_name"] = request.args["calendarName"]
     return redirect(GoogleAuth.get_auth_url())
 
 
 @bp.route("/google-callback", methods=("GET", "POST"))
 def google_callback():
     denied = None
+    calendar_name = None
     if "code" in request.args:
         # Get tokens with auth code and add access_token to session
         tokens = GoogleAuth.fetch_tokens(request.args["code"])
-        session["credentials"]["google"]["access_token"] = tokens["access_token"]
+        # TODO: are you dumb? putting the access_token inside a cookie??? change this
+        # session["credentials"]["google"]["access_token"] = tokens["access_token"]
+        
+        # Get what the user wanted to call the calendar
+        calendar_name = session["calendar_name"]
+        del session["calendar_name"]
 
         # User now has connected their google calendar
         # and add user's refresh token to the db
         db = get_db()
         db.users.update_one(
             {"_id": get_logged_in_user_id()},
-            {"$set": 
-                {
-                    "connected_calendars.Google": True,
-                    "refresh_tokens.Google": tokens["refresh_token"]
+            {
+                "$push": {
+                    "connected_calendars.Google": calendar_name
+                },
+                "set": {
+                    f"refresh_tokens.Google.{calendar_name}": tokens["refresh_token"]
                 }
             }
         )
     else:
         denied = True
-    
+        del session["calendar_name"]
+
+    # Give calendar details (name and vendor)
+    calendar = {"name": calendar_name, "vendor": "Google"}
+
     return redirect(url_for(
-        "calendarview.index", calendar="Google", denied=denied))
+        "calendarview.index", 
+        calendar=calendar, 
+        denied=denied))
 
 
 # TODO implement outlook
