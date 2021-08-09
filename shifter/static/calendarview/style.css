@@ -271,7 +271,7 @@ header .user-config input {
     width: 100%;
     height: calc(100% - 2rem);
     grid-template-columns: 1fr;
-    grid-template-rows: 7fr 1.2em 3fr
+    grid-template-rows: min-content 1fr 1fr;
 }
 
 #create-shift-view form {
@@ -327,15 +327,12 @@ header .user-config input {
     display: none;
     margin: auto 0;
     color: red;
-    animation: none;  /* Will be added in JS */
+    font-size: 0.5em;
 }
+
 @keyframes fade-out-fade-in {
     from {opacity: 0;}
     to {opacity: 100;}
-}
-@keyframes disappear {
-    from {display: block;}
-    to {display: none;}
 }
 
 .calendar-wrapper {

@@ -115,14 +115,39 @@ export function deleteShift(e) {
 
 
 function createShift(evt) {
+
+    /* Returns 1 if startTime is before endTime, 0 if they're the same
+    and -1 if endTime is before startTime */
+    function compareTimes(startTime, endTime) {
+        let [sHour, sMin] = startTime.split(":").map(x => parseInt(x, 10));
+        let [eHour, eMin] = endTime.split(":").map(x => parseInt(x, 10));
+
+        if (sHour < eHour) { return 1; }
+        else if (sHour > eHour) { return -1; }
+        else {  // If they're equal, compare the minutes next
+            if (sMin < eMin) { return 1; }
+            else if (sMin > eMin) { return -1; }
+            else { return 0; }
+        }
+    }
+
     evt.preventDefault();
 
-    let xhr = new XMLHttpRequest();
-    xhr.responseType = "json";
     let fd = new FormData(evt.target); // evt.target is the form
+    // Restricts Shift to be only a single day. Will be changed later
+    if (compareTimes(fd.get("start-time"), fd.get("end-time")) < 1) {
+        // Shows error essage "Invalid Time Range"
+        let error = document.querySelector(".invalid-time-range");
+        error.style.display = "block";
+        setTimeout(() => error.style.display = "none", 1000);
+        return;
+    }
     // Append :00 seconds to the start and end times
     fd.set("start-time", fd.get("start-time") + ":00" + OFFSET);
     fd.set("end-time", fd.get("end-time") + ":00" + OFFSET);
+
+    let xhr = new XMLHttpRequest();
+    xhr.responseType = "json";
 
     // If successful, remove the create shift view and loading
     // animation as well as update the shifts dropdown list
@@ -133,8 +158,9 @@ function createShift(evt) {
     }
 
     xhr.onerror = function () {
+        let error = document.querySelector(".cant-create-shift");
         error.style.display = "block";
-        error.style.animation = "disappear 1s 1";
+        setTimeout(() => error.style.display = "none", 1000);
     }
 
     xhr.open("POST", CREATE_SHIFT_ENDPOINT);
@@ -142,7 +168,7 @@ function createShift(evt) {
     evt.target.reset() // Clear the form after sending request
 
     // While waiting for request, show loading animation
-    let [loading, error] = document.querySelectorAll("#create-shift-status span");
+    let loading = document.querySelector("#create-shift-status span");
     loading.style.display = "block";
 }
 
