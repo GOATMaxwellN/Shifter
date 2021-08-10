@@ -529,3 +529,38 @@ header .user-config input {
     background-color: rgb(205, 97, 85);
     border: 3px outset rgb(157, 76, 67);
 }
+
+.name-calendar-modal h3 {
+    text-align: center;
+    font-size: 2em;
+    padding: 0.3em;
+    color: rgb(157, 76, 67);
+    margin-bottom: 1em;
+}
+
+.name-calendar-modal form {
+    display: grid;
+    grid-auto-flow: row;
+    place-items: end end;
+}
+
+.name-calendar-modal form input[type="text"] {
+    justify-self: center;
+    align-self: end;
+    width: 50%;
+    margin-bottom: 1em;
+    font-size: 1.3em;
+}
+
+.name-calendar-modal form input[type="submit"] {
+    justify-self: center;
+    align-self: start;
+    background-color: rgb(205, 97, 85);
+    border-color: rgb(157, 76, 67);
+    border-style: outset;
+    padding: 0.3em;
+}
+
+.name-calendar-modal form input[type="submit"]:active {
+    border-style: inset;
+}
