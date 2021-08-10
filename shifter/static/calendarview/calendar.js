@@ -149,7 +149,7 @@ class OutlookCalendar {
 const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
 export const OFFSET = getTimeZoneOffset();
 const GET_CALENDARS_URL = "http://127.0.0.1:5000/api/get-calendars";
-const CHANGE_CALENDAR_ACCOUNT_URL = "http://127.0.0.1:5000/api/get-calendars";
+const CHANGE_CALENDAR_ACCOUNT_URL = "http://127.0.0.1:5000/api/change-calendar-account";
 
 // Used when drawing the calendar
 const NAMES_OF_DAYS = `
@@ -189,12 +189,12 @@ function getConnectedCalendar() {
 
 function changeCalendarAccount(e) {
     let xhr = new XMLHttpRequest();
+    xhr.responseType = "json";
     let fd = new FormData();
     fd.set("calendar", e.currentTarget.getAttribute("value"));
 
-    xhr.responseType = "json";
     xhr.onload = function() {
-        location.reload();
+        location.href = this.response["url"];
     }
 
     xhr.open("POST", CHANGE_CALENDAR_ACCOUNT_URL);

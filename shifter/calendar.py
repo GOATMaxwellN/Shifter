@@ -2,6 +2,7 @@ from flask import (
     Blueprint, render_template, request, session)
 from shifter.auth import get_logged_in_user_id, login_required
 from shifter.db import get_db
+import json
 
 
 bp = Blueprint("calendarview", "shifter", url_prefix="/calendarview")
@@ -25,8 +26,9 @@ def index():
         denied = True
     # 2. The attempt was successful
     elif "calendar" in request.args:
-        session["current_calendar"] = request.args["calendar"]
-        session["calendar_last_used"] = request.args["calendar"]
+        calendar_info = json.loads(request.args["calendar"])
+        session["current_calendar"] = calendar_info
+        session["calendar_last_used"] = calendar_info
 
     # User has just logged in or navigated straight here.
     # 1. Check if session has their most recently opened calendar.

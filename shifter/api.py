@@ -1,7 +1,8 @@
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, request, jsonify, session, redirect, url_for
 from .auth import get_logged_in_user_id
 from .oauth import GoogleAuth
 from .db import get_db
+import json
 
 
 bp = Blueprint("api", "shifter", url_prefix="/api")
@@ -85,10 +86,9 @@ def get_calendars():
 @bp.route("change-calendar-account", methods=("POST",))
 def change_calendar_account():
     cal_name, vendor = request.form["calendar"].split("-")
-    session["current_calendar"]["name"] = cal_name
-    session["current_calendar"]["vendor"] = vendor
+    calendar = json.dumps({"name": cal_name, "vendor": vendor})
 
-    return {"vendor": vendor}, 200
+    return {"url": url_for("calendarview.index", calendar=calendar)}, 200
 
 
 # === Google endpoints ===
