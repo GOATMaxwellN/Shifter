@@ -270,7 +270,8 @@ def google_callback():
     denied = None
     calendar_name = None
     if "code" in request.args:
-        # Get tokens with auth code and add access_token to session
+        # Get tokens with auth code and add access_token and refresh
+        # token to the database
         tokens = GoogleAuth.fetch_tokens(request.args["code"])
         
         # Get what the user wanted to call the calendar
@@ -287,6 +288,7 @@ def google_callback():
                     "connected_calendars.Google": calendar_name
                 },
                 "set": {
+                    f"access_tokens.Google.{calendar_name}": tokens["access_token"],
                     f"refresh_tokens.Google.{calendar_name}": tokens["refresh_token"]
                 }
             }
