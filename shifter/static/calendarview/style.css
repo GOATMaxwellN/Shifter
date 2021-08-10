@@ -485,6 +485,7 @@ header .user-config input {
 }
 
 .modal-content {
+    display: none;
     background-color: #fefefe;
     margin: 15% auto;
     border: 1px solid #888;
@@ -493,18 +494,18 @@ header .user-config input {
     overflow-y: auto;
 }
 
-.modal-content h3 {
+.all-calendars-modal h3 {
     text-align: center;
     font-size: 2em;
     padding: 0.3em;
     color: rgb(157, 76, 67);
 }
 
-.modal-content ul {
+.all-calendars-modal ul {
     list-style-type: none;
 }
 
-.modal-content ul li {
+.all-calendars-modal ul li {
     font-size: 1.5em;
     padding: 0.5em 0;
     margin: 1em;
@@ -512,16 +513,16 @@ header .user-config input {
     border-bottom: 1px solid grey;
 }
 
-.modal-content ul li a {
+.all-calendars-modal ul li a {
     color: rgb(205, 97, 85);
     text-decoration: none;
 }
 
-.modal-content ul li a:hover {
+.all-calendars-modal ul li a:hover {
     text-decoration: underline;
 }
 
-.modal-content ul li button {
+.all-calendars-modal ul li button {
     position: relative;
     left: 2em;
     padding: 0.2em;

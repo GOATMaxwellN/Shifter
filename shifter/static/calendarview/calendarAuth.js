@@ -40,5 +40,6 @@ function showNameCalendarModal(e) {
     } else if (this.getAttribute("value") === "outlook") {
         modal.children[1].setAttribute("action", CONNECT_TO_OUTLOOK_URL);
     }
+    document.querySelector(".modal-wrapper").style.display = "block";
     modal.style.display = "block";
 }

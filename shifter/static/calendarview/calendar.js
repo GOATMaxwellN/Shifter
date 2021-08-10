@@ -165,7 +165,7 @@ const CONFIRM_BTN = document.querySelector(".confirm-btn");
 CONFIRM_BTN.addEventListener("click", confirmPendingShifts);
 
 document.querySelector(".modal-wrapper")
-    .addEventListener("click", hideAllCalendarsModal);
+    .addEventListener("click", hideModals);
 
 // Holds the current Calendar instance to use
 let calendar;
@@ -398,12 +398,20 @@ function confirmPendingShifts() {
 // Show modal dialog that shows all the user's connected calendars
 export function showAllCalendarsModal(e) {
     document.querySelector(".modal-wrapper").style.display = "block";
+    document.querySelector(".all-calendars-modal").style.display = "block";
 }
 
 
-function hideAllCalendarsModal(e) {
-    if (document.querySelector(".modal-content").contains(e.target)) { return; }
+function hideModals(e) {
+    // Don't close the modal if click came from inside the modal
+    for (let modal of document.querySelectorAll(".modal-content")) {
+        if (modal.contains(e.target)) { return; }
+    }
+
     document.querySelector(".modal-wrapper").style.display = "none";
+    // Don't know which modal is displayed, so just close them all
+    document.querySelectorAll(".modal-content")
+        .forEach(e => e.style.display = "none");
 }
 
 
