@@ -516,6 +516,7 @@ header .user-config input {
 .all-calendars-modal ul li a {
     color: rgb(205, 97, 85);
     text-decoration: none;
+    cursor: pointer;
 }
 
 .all-calendars-modal ul li a:hover {

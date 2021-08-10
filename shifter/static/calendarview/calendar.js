@@ -148,6 +148,8 @@ class OutlookCalendar {
 // === Constants
 const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
 export const OFFSET = getTimeZoneOffset();
+const GET_CALENDARS_URL = "http://127.0.0.1:5000/api/get-calendars";
+const CHANGE_CALENDAR_ACCOUNT_URL = "http://127.0.0.1:5000/api/get-calendars";
 
 // Used when drawing the calendar
 const NAMES_OF_DAYS = `
@@ -183,6 +185,20 @@ function getConnectedCalendar() {
     } else if (cal === "outlook") {
         calendar = new OutlookCalendar();
     }
+}
+
+function changeCalendarAccount(e) {
+    let xhr = new XMLHttpRequest();
+    let fd = new FormData();
+    fd.set("calendar", e.currentTarget.getAttribute("value"));
+
+    xhr.responseType = "json";
+    xhr.onload = function() {
+        location.reload();
+    }
+
+    xhr.open("POST", CHANGE_CALENDAR_ACCOUNT_URL);
+    xhr.send(fd);
 }
 
 
@@ -395,10 +411,42 @@ function confirmPendingShifts() {
 }
 
 
-// Show modal dialog that shows all the user's connected calendars
+/* Show modal dialog that shows all the user's connected calendars
+and populate with user's calendar accounts */
 export function showAllCalendarsModal(e) {
+
+    function clearList() {
+        while (ul.firstChild) {
+            ul.removeChild(ul.lastChild);
+        }
+    }
+    
+    let ul = document.querySelector(".all-calendars-modal ul");
+    clearList();
+
     document.querySelector(".modal-wrapper").style.display = "block";
     document.querySelector(".all-calendars-modal").style.display = "block";
+
+    let xhr = new XMLHttpRequest();
+    xhr.responseType = "json";
+
+    xhr.onload = function() {
+        // Populate modal with all the calendars
+        let domFrag = new DocumentFragment();
+        for (let cal of this.response) {
+            let [name, vendor] = cal.split('-');
+            let li = document.createElement("LI");
+            li.setAttribute("value", name + '-' + vendor);
+            let html = `<a>${name} (${vendor})</a><button>DEL</button>`
+            li.insertAdjacentHTML("afterbegin", html);
+            li.addEventListener("click", changeCalendarAccount);
+            domFrag.append(li);
+        }
+        ul.appendChild(domFrag);
+    }
+
+    xhr.open("GET", GET_CALENDARS_URL);
+    xhr.send();
 }
 
 

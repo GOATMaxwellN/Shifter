@@ -71,6 +71,26 @@ def delete_shift():
     return "Success", 200
 
 
+@bp.route("get-calendars", methods=("GET",))
+def get_calendars():
+    user = get_db().users.find({"_id": get_logged_in_user_id()})[0]
+    cals = []
+    for vendor in user["connected_calendars"]:
+        for cal_name in user["connected_calendars"][vendor]:
+            cals.append(f"{cal_name}-{vendor}")
+
+    return jsonify(cals)
+
+
+@bp.route("change-calendar-account", methods=("POST",))
+def change_calendar_account():
+    cal_name, vendor = request.form["calendar"].split("-")
+    session["current_calendar"]["name"] = cal_name
+    session["current_calendar"]["vendor"] = vendor
+
+    return {"vendor": vendor}, 200
+
+
 # === Google endpoints ===
 @bp.route("/google-list-events", methods=["GET"])
 def google_list_events():
