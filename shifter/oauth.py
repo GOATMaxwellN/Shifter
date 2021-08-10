@@ -298,7 +298,7 @@ def google_callback():
         del session["calendar_name"]
 
     # Give calendar details (name and vendor)
-    calendar = {"name": calendar_name, "vendor": "Google"}
+    calendar = json.loads({"name": calendar_name, "vendor": "Google"})
 
     return redirect(url_for(
         "calendarview.index", 
