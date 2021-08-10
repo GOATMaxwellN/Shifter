@@ -272,8 +272,6 @@ def google_callback():
     if "code" in request.args:
         # Get tokens with auth code and add access_token to session
         tokens = GoogleAuth.fetch_tokens(request.args["code"])
-        # TODO: are you dumb? putting the access_token inside a cookie??? change this
-        # session["credentials"]["google"]["access_token"] = tokens["access_token"]
         
         # Get what the user wanted to call the calendar
         calendar_name = session["calendar_name"]
