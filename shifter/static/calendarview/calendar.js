@@ -150,6 +150,7 @@ const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
 export const OFFSET = getTimeZoneOffset();
 const GET_CALENDARS_URL = "http://127.0.0.1:5000/api/get-calendars";
 const CHANGE_CALENDAR_ACCOUNT_URL = "http://127.0.0.1:5000/api/change-calendar-account";
+const DELETE_CALENDAR_URL = "http://127.0.0.1:5000/api/delete-calendar";
 
 // Used when drawing the calendar
 const NAMES_OF_DAYS = `
@@ -188,6 +189,9 @@ function getConnectedCalendar() {
 }
 
 function changeCalendarAccount(e) {
+    // Don't do anything if this came from delete button
+    if (e.currentTarget.querySelector("button").isSameNode(e.target)) { return; }
+
     let xhr = new XMLHttpRequest();
     xhr.responseType = "json";
     let fd = new FormData();
@@ -411,6 +415,33 @@ function confirmPendingShifts() {
 }
 
 
+// Deletes a calendar account that you connected
+function deleteCalendar(e) {
+    /* Animation to let user know it's in the process of being deleted.
+    Bad name for now but it will be refactored */
+    let calOpt = e.currentTarget.parentElement;
+    calOpt.style.animation = "deleting-shift 0.3s alternate infinite";
+    let calInfo = e.currentTarget.parentElement.getAttribute("value");
+
+    let xhr = new XMLHttpRequest();
+    xhr.responseType = "json";
+    let fd = new FormData();
+    fd.set("calendarInfo", calInfo);
+
+    xhr.onload = function() {
+        if (this.response["action"] === "redirect") {
+            location.href = this.response["url"];
+        }
+
+        calOpt.remove();
+    }
+
+
+    xhr.open("POST", DELETE_CALENDAR_URL);
+    xhr.send(fd);
+}
+
+
 /* Show modal dialog that shows all the user's connected calendars
 and populate with user's calendar accounts */
 export function showAllCalendarsModal(e) {
@@ -420,7 +451,7 @@ export function showAllCalendarsModal(e) {
             ul.removeChild(ul.lastChild);
         }
     }
-    
+
     let ul = document.querySelector(".all-calendars-modal ul");
     clearList();
 
@@ -437,8 +468,14 @@ export function showAllCalendarsModal(e) {
             let [name, vendor] = cal.split('-');
             let li = document.createElement("LI");
             li.setAttribute("value", name + '-' + vendor);
-            let html = `<a>${name} (${vendor})</a><button>DEL</button>`
-            li.insertAdjacentHTML("afterbegin", html);
+            
+            let a = document.createElement("A");
+            a.textContent = `${name} (${vendor})`;
+            let delBtn = document.createElement("BUTTON");
+            delBtn.textContent = "DEL";
+            delBtn.addEventListener("click", deleteCalendar);
+
+            li.append(a, delBtn);
             li.addEventListener("click", changeCalendarAccount);
             domFrag.append(li);
         }

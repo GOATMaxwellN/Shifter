@@ -83,6 +83,41 @@ def get_calendars():
     return jsonify(cals)
 
 
+@bp.route("/delete-calendar", methods=("POST",))
+def delete_calendar():
+    name, vendor = request.form["calendarInfo"].split('-')
+
+    db = get_db()
+    # TODO: Once you change db layout, change this accordingly
+    db.users.update_one(
+        {"_id": get_logged_in_user_id()},
+        {
+            "$pull": {
+                f"connected_calendars.{vendor}": name
+            },
+            "$unset": {
+                f"access_tokens.{vendor}.{name}": '',
+                f"refresh_tokens.{vendor}.{name}": ''
+            } 
+        }
+    )
+
+    # If user deleted the calendar they're currently viewing, 
+    # remove the calendar from the 'calendar_last_used' field
+    # in the session and have them reload the calendarview page,
+    # which will handle which calendar to show, if show one at all.
+    if name == session["current_calendar"]["name"]:
+        del session["calendar_last_used"]
+        return {
+            "action": "redirect",
+            "url": url_for("calendarview.index")
+        }, 200
+
+    return {
+        "action": "nothing"
+    }, 200
+
+
 @bp.route("change-calendar-account", methods=("POST",))
 def change_calendar_account():
     cal_name, vendor = request.form["calendar"].split("-")
