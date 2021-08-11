@@ -52,10 +52,12 @@ class GoogleAuth:
             ("grant_type", "authorization_code"),
             ("redirect_uri", cls.REDIRECT_URI)
         ]
+        print(params)
         r = requests.post(
-            cls.TOKEN_URI, params=params,
+            cls.TOKEN_URI, json=params,
             headers={"Content-Type": "application/x-www-form-urlencoded"}
         )
+        print(r.json())
         return r.json()
 
     @staticmethod
@@ -83,7 +85,7 @@ class GoogleAuth:
             ("refresh_token", refresh_token)
         ]
         r = requests.post(
-            cls.TOKEN_URI, params=params, 
+            cls.TOKEN_URI, json=params, 
             headers={"Content-Type": "application/x-www-form-urlencoded"}
         )
 
@@ -261,7 +263,7 @@ class GoogleAuth:
 def connect_to_google():
     # Temporary session entry to store what the user wants to name 
     # the calendar they're about to connect
-    session["calendar_name"] = request.args["calendarName"]
+    session["calendar_name"] = request.args["calendar-name"]
     return redirect(GoogleAuth.get_auth_url())
 
 

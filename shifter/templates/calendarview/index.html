@@ -25,8 +25,8 @@
                     <!-- Custom dropdown menu will be created here if the user's calendar vendor allows for multiple calendars -->
                 </div>
                 <div class="config-connect-btns-wrapper">
-                    <button value=""class="google-style" type="button"><i>&#xf1a0</i>Google</button>
-                    <button class="outlook-style" type="button"><i>&#xe801</i>Outlook</button>
+                    <button value="google" class="google-style" type="button"><i>&#xf1a0</i>Google</button>
+                    <button value="outlook" class="outlook-style" type="button"><i>&#xe801</i>Outlook</button>
                 </div>
                 <button class="confirm-btn" type="button" disabled>Confirm</button>
             </div>
@@ -42,8 +42,8 @@
                     {% else %}
                     <!-- User has no calendar, so these buttons are links to connect to supported calendars -->
                     <div class="connect-btns-wrapper">
-                        <button class="calendar-connect-btn google-btn" type="button">Connect To Google Calendar</button>
-                        <button class="calendar-connect-btn outlook-btn" type="button">Connect To Outlook Calendar</button>
+                        <button value="google" class="calendar-connect-btn google-btn" type="button">Connect To Google Calendar</button>
+                        <button value="outlook" class="calendar-connect-btn outlook-btn" type="button">Connect To Outlook Calendar</button>
                     </div>
                     {% if denied != None %}<span id="error">Could not connect to calendar. Click to dismiss.</span>{% endif %}
                     {% endif %}
