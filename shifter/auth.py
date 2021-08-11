@@ -83,6 +83,9 @@ def signup():
                         "Google": [],
                         "Outlook": [],
                     },
+                    "access_tokens": {
+                        "Google": {},
+                    },
                     "refresh_tokens": {
                         "Google": {},
                     }

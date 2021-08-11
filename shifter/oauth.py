@@ -45,19 +45,22 @@ class GoogleAuth:
 
     @classmethod
     def fetch_tokens(cls, code):
-        params = [
-            ("client_id", cls.CLIENT_ID),
-            ("client_secret", cls.CLIENT_SECRET),
-            ("code", code),
-            ("grant_type", "authorization_code"),
-            ("redirect_uri", cls.REDIRECT_URI)
-        ]
-        print(params)
+        payload = {
+            "client_id": cls.CLIENT_ID,
+            "client_secret": cls.CLIENT_SECRET,
+            "code": code,
+            "grant_type": "authorization_code",
+            "redirect_uri": cls.REDIRECT_URI
+        }
+
+        # Have to make this payload string to stop requests from encoding
+        # the redirect_uri further than it already is. Causes a 'Bad Request'
+        # if I don't do this.
+        payload_str = "&".join("{}={}".format(k, v) for k, v in payload.items())
         r = requests.post(
-            cls.TOKEN_URI, json=params,
+            cls.TOKEN_URI, params=payload_str,
             headers={"Content-Type": "application/x-www-form-urlencoded"}
         )
-        print(r.json())
         return r.json()
 
     @staticmethod
@@ -85,7 +88,7 @@ class GoogleAuth:
             ("refresh_token", refresh_token)
         ]
         r = requests.post(
-            cls.TOKEN_URI, json=params, 
+            cls.TOKEN_URI, params=params, 
             headers={"Content-Type": "application/x-www-form-urlencoded"}
         )
 
@@ -289,7 +292,7 @@ def google_callback():
                 "$push": {
                     "connected_calendars.Google": calendar_name
                 },
-                "set": {
+                "$set": {
                     f"access_tokens.Google.{calendar_name}": tokens["access_token"],
                     f"refresh_tokens.Google.{calendar_name}": tokens["refresh_token"]
                 }
@@ -300,7 +303,7 @@ def google_callback():
         del session["calendar_name"]
 
     # Give calendar details (name and vendor)
-    calendar = json.loads({"name": calendar_name, "vendor": "Google"})
+    calendar = json.dumps({"name": calendar_name, "vendor": "Google"})
 
     return redirect(url_for(
         "calendarview.index", 

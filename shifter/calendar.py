@@ -48,6 +48,6 @@ def index():
     return render_template(
         "calendarview/index.html",
         username=username,
-        calendar_vendor=session["current_calendar"]["vendor"],
+        calendar_vendor=session["current_calendar"].get("vendor", None),
         denied=denied
     )
