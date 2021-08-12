@@ -17,6 +17,10 @@ document.querySelector(".create-shift-btn").addEventListener("click", showCreate
 document.querySelector(".create-shift-go-back-btn").addEventListener("click", hideCreateShiftView);
 document.querySelector("#create-shift-form").addEventListener("submit", createShift);
 
+// Checkbox to make a shift an all day event
+document.querySelector("#create-shift-form #all-day").addEventListener("click", allDayCheckboxClicked);
+let allDayCheckboxToggled = false;
+
 getShifts();
 
 
@@ -134,17 +138,24 @@ function createShift(evt) {
     evt.preventDefault();
 
     let fd = new FormData(evt.target); // evt.target is the form
-    // Restricts Shift to be only a single day. Will be changed later
-    if (compareTimes(fd.get("start-time"), fd.get("end-time")) < 1) {
-        // Shows error essage "Invalid Time Range"
-        let error = document.querySelector(".invalid-time-range");
-        error.style.display = "block";
-        setTimeout(() => error.style.display = "none", 1000);
-        return;
+    // If this is not an all day event, compare the times
+    if (!allDayCheckboxToggled) {
+        // Restricts Shift to be only a single day. Will be changed later
+        if (compareTimes(fd.get("start-time"), fd.get("end-time")) < 1) {
+            // Shows error essage "Invalid Time Range"
+            let error = document.querySelector(".invalid-time-range");
+            error.style.display = "block";
+            setTimeout(() => error.style.display = "none", 1000);
+            return;
+        }
+        // Append :00 seconds to the start and end times
+        fd.set("start-time", fd.get("start-time") + ":00" + OFFSET);
+        fd.set("end-time", fd.get("end-time") + ":00" + OFFSET);
+    } else {
+        // Re-enable time fields
+        document.querySelectorAll("#create-shift-form input[type='time']")
+            .forEach(x => x.disabled = false);
     }
-    // Append :00 seconds to the start and end times
-    fd.set("start-time", fd.get("start-time") + ":00" + OFFSET);
-    fd.set("end-time", fd.get("end-time") + ":00" + OFFSET);
 
     let xhr = new XMLHttpRequest();
     xhr.responseType = "json";
@@ -166,10 +177,24 @@ function createShift(evt) {
     xhr.open("POST", CREATE_SHIFT_ENDPOINT);
     xhr.send(fd);
     evt.target.reset() // Clear the form after sending request
+    allDayCheckboxToggled = false;
 
     // While waiting for request, show loading animation
     let loading = document.querySelector("#create-shift-status span");
     loading.style.display = "block";
+}
+
+
+// Disables the time fields when all-day checkbox is toggled on
+function allDayCheckboxClicked() {
+    allDayCheckboxToggled = (allDayCheckboxToggled) ? false : true;
+    if (allDayCheckboxToggled) {
+        document.querySelectorAll("#create-shift-form input[type='time']")
+            .forEach(x => x.disabled = true);
+    } else {
+        document.querySelectorAll("#create-shift-form input[type='time']")
+            .forEach(x => x.disabled = false);
+    }
 }
 
 

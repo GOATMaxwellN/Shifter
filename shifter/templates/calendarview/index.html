@@ -62,14 +62,17 @@
                 </div>
                 <div id="create-shift-view">
                     <form id="create-shift-form">
-                        <label for="name">*Shift name:</label>
+                        <label for="name">Shift name:</label>
                         <input type="text" name="name" id="name" required>
 
-                        <label for="start-time">*Start time:</label>
+                        <label for="all-day">All day</label>
+                        <input type="checkbox" name="all-day" id="all-day">
+
+                        <label for="start-time">Start time:</label>
                         <input type="time" name="start-time" id="start-time" required>
                         
                         <label for="end-time">End time:</label>
-                        <input type="time" name="end-time" id="end-time">
+                        <input type="time" name="end-time" id="end-time" required>
                         
                         <input type="submit" value="Create" />
                     </form>

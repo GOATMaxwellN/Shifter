@@ -24,27 +24,30 @@ def get_shifts():
 @bp.route("/create-shift", methods=("POST",))
 def create_shift():
     shift_name = request.form["name"]
-    start_time = request.form["start-time"]
-    end_time = request.form["end-time"]
+    if "all-day" in request.form:
+        shift_times = "all_day"
+    else:
+        shift_times = {
+            "start_time": request.form["start-time"],
+            "end_time": request.form["end-time"]
+        }
 
     db = get_db()
     db.users.update_one(
         {"_id": get_logged_in_user_id()},
         {"$set": 
             {
-                f"shifts.{shift_name}": 
-                    {
-                        "start_time": start_time,
-                        "end_time": end_time
-                    }
+                f"shifts.{shift_name}": shift_times
             }
         }
     )
 
     # Update the shifts held in session
+    # TODO: 'shifts' field should only contain the names of Shifts
+    # Remove this later
     session["shifts"][shift_name] = {
-        "start_time": start_time,
-        "end_time": end_time
+        "start_time": None,
+        "end_time": None
     }
     session.modified = True
 
@@ -72,7 +75,7 @@ def delete_shift():
     return "Success", 200
 
 
-@bp.route("get-calendars", methods=("GET",))
+@bp.route("/get-calendars", methods=("GET",))
 def get_calendars():
     user = get_db().users.find({"_id": get_logged_in_user_id()})[0]
     cals = []
