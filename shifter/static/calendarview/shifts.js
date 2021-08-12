@@ -69,7 +69,7 @@ function addShiftsToSelect(shifts, init = false) {
     let shiftsSelect = document.getElementById("shifts-dropdown-list");
     if (init) {
         shiftsSelect.add(createOption("Select a Shift:", true));
-        for (let s in shifts) {
+        for (let s of shifts) {
             shiftsSelect.add(createOption(s));
         }
 

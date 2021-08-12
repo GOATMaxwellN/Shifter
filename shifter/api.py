@@ -16,9 +16,9 @@ def get_shifts():
         db = get_db()
         user = db.users.find({"_id": get_logged_in_user_id()})[0]
         # Add shifts to the session
-        session["shifts"] = user["shifts"]
+        session["shifts"] = list(user["shifts"].keys())
 
-        return jsonify(user["shifts"])
+        return jsonify(session["shifts"])
         
 
 @bp.route("/create-shift", methods=("POST",))
@@ -43,12 +43,7 @@ def create_shift():
     )
 
     # Update the shifts held in session
-    # TODO: 'shifts' field should only contain the names of Shifts
-    # Remove this later
-    session["shifts"][shift_name] = {
-        "start_time": None,
-        "end_time": None
-    }
+    session["shifts"].append(shift_name)
     session.modified = True
 
     return {"shift_name": shift_name}, 200
@@ -69,7 +64,7 @@ def delete_shift():
         }
     )
     # Deletes the shift from sessions
-    del session["shifts"][shift_name]
+    del session["shifts"][session["shifts"].index(shift_name)]
     session.modified = True
 
     return "Success", 200
