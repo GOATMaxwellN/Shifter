@@ -300,6 +300,11 @@ header .user-config input {
 #create-shift-view form input[type="submit"] {
     font-size: 1.3em;
     height: 1.8em;
+    background-color: rgb(205, 97, 85);
+    color: white;
+}
+#create-shift-view form input[type="submit"]:hover {
+    background-color: rgb(190, 91, 80);
 }
 
 .create-shift-go-back-btn {
@@ -307,8 +312,11 @@ header .user-config input {
     grid-row: 2 / 3;
     font-size: 1em;
     height: 1.2em;
-    background-color: red;
+    background-color: #EEE;
     margin: 0 auto;
+}
+.create-shift-go-back-btn:hover {
+    background-color: #DDD;
 }
 
 #create-shift-status {
