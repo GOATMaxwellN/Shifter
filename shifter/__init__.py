@@ -1,10 +1,11 @@
 from flask import Flask
-
+import os
 
 def create_app(test_config=None):
     app = Flask("shifter", instance_relative_config=True)
     if test_config is None:
-        app.config.from_pyfile("config.cfg")
+        config_class = os.getenv("CONFIG_CLASS", "config.Config")
+        app.config.from_object(config_class)
     else:
         app.config.from_mapping(test_config)
 
