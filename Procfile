@@ -1,1 +1,1 @@
-web: gunicorn shifter:create_app()
+web: gunicorn "shifter:create_app()"
