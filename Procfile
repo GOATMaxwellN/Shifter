@@ -1,0 +1,1 @@
+web: gunicorn shifter:create_app()
