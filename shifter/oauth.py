@@ -43,7 +43,7 @@ class GoogleAuth:
         url = (
             cls.AUTH_URI +
             "?client_id={}&redirect_uri={}&scope={}"
-            "&response_type=code&access_type=offline&prompt=select_account"
+            "&response_type=code&access_type=offline&prompt=select_account+consent"
         ).format(
             cls.CLIENT_ID, cls.REDIRECT_URI, cls.SCOPE
         )
