@@ -2,13 +2,14 @@
 import { drawCustomCalendarSelect } from "./customElems.js";
 import { getSelectedShift, concatDateShift } from "./shifts.js";
 
+const ROOT = window.location.protocol + "//" + window.location.host;
 
 // Class that is instantiated when user is viewing their google calendar
 class GoogleCalendar {
     // Endpoints used
-    LIST_EVENTS_ENDPOINT = "http://127.0.0.1:5000/api/google-list-events";
-    LIST_CALENDARS_ENDPOINT = "http://127.0.0.1:5000/api/google-list-calendars";
-    ADD_SHIFTS_ENDPOINT = "http://127.0.0.1:5000/api/google-add-shift";
+    LIST_EVENTS_ENDPOINT = ROOT + "/api/google-list-events";
+    LIST_CALENDARS_ENDPOINT = ROOT + "/api/google-list-calendars";
+    ADD_SHIFTS_ENDPOINT = ROOT + "/api/google-add-shift";
 
     calendars = {primary: "primary"};
     selectedCalendar = "primary";
@@ -148,9 +149,9 @@ class OutlookCalendar {
 // === Constants
 const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
 export const OFFSET = getTimeZoneOffset();
-const GET_CALENDARS_URL = "http://127.0.0.1:5000/api/get-calendars";
-const CHANGE_CALENDAR_ACCOUNT_URL = "http://127.0.0.1:5000/api/change-calendar-account";
-const DELETE_CALENDAR_URL = "http://127.0.0.1:5000/api/delete-calendar";
+const GET_CALENDARS_URL = ROOT + "/api/get-calendars";
+const CHANGE_CALENDAR_ACCOUNT_URL = ROOT + "/api/change-calendar-account";
+const DELETE_CALENDAR_URL = ROOT + "/api/delete-calendar";
 
 // Used when drawing the calendar
 const NAMES_OF_DAYS = `

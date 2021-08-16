@@ -2,9 +2,10 @@
 import { drawCustomShiftSelect, addShiftToCustomSelect } from "./customElems.js";
 import { OFFSET } from "./calendar.js";
 
-const GET_SHIFTS_ENDPOINT = "http://127.0.0.1:5000/api/get-shifts";
-const CREATE_SHIFT_ENDPOINT = "http://127.0.0.1:5000/api/create-shift";
-const DELETE_SHIFT_ENDPOINT = "http://127.0.0.1:5000/api/delete-shift";
+const ROOT = window.location.protocol + "//" + window.location.host;
+const GET_SHIFTS_ENDPOINT = ROOT + "/api/get-shifts";
+const CREATE_SHIFT_ENDPOINT = ROOT + "/api/create-shift";
+const DELETE_SHIFT_ENDPOINT = ROOT + "/api/delete-shift";
 const MONTH_TO_NUM = {
     'Jan': '01', 'Feb': '02', 'Mar': '03',
     'Apr': '04', 'May': '05', 'Jun': '06',
