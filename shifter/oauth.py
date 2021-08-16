@@ -30,7 +30,7 @@ class GoogleAuth:
 
     REDIRECT_URI = "https://shifter-maxwelln.herokuapp.com/oauth/google-callback"\
         if current_app.env == "production"\
-        else "http%3A//127.0.0.1%3A5000/oauth/google-callback"
+        else "http://127.0.0.1:5000/oauth/google-callback"
 
     # If CLIENT_SECRET is not in env variables, get it from local instance file
     CLIENT_SECRET = os.getenv("GOOGLE_SECRET")
@@ -67,6 +67,7 @@ class GoogleAuth:
             cls.TOKEN_URI, params=payload_str,
             headers={"Content-Type": "application/x-www-form-urlencoded"}
         )
+
         return r.json()
 
     @staticmethod
@@ -284,6 +285,10 @@ def google_callback():
         # Get tokens with auth code and add access_token and refresh
         # token to the database
         tokens = GoogleAuth.fetch_tokens(request.args["code"])
+
+        # Temporary way to show me error response if there is an error
+        if "access_token" not in tokens:
+            return tokens
         
         # Get what the user wanted to call the calendar
         calendar_name = session["calendar_name"]
