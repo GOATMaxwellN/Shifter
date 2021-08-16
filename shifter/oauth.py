@@ -287,7 +287,7 @@ def google_callback():
         tokens = GoogleAuth.fetch_tokens(request.args["code"])
 
         # Temporary way to show me error response if there is an error
-        if "access_token" not in tokens:
+        if "refresh_token" not in tokens:
             return tokens
         
         # Get what the user wanted to call the calendar
