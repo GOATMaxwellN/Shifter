@@ -7,7 +7,7 @@ import certifi
 def init_db():
     global db
     client = MongoClient(
-        current_app.config["MONGO_DB_SETTINGS"]["CONNECTION_STRING"],
+        current_app.config["DB_URI"],
         tlsCAFile=certifi.where(),
     )
     db = client.ShifterDB

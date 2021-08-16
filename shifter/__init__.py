@@ -4,8 +4,13 @@ import os
 def create_app(test_config=None):
     app = Flask("shifter", instance_relative_config=True)
     if test_config is None:
-        config_class = os.getenv("CONFIG_CLASS", "config.Config")
-        app.config.from_object(config_class)
+        # If in Heroku prod server, get all config values from
+        # env variables
+        if app.env == "production":
+            app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+            app.config["DB_URI"] = os.getenv("DB_URI")
+        else:
+            app.config.from_pyfile("config.cfg")
     else:
         app.config.from_mapping(test_config)
 
@@ -26,5 +31,9 @@ def create_app(test_config=None):
 
     from . import api
     app.register_blueprint(api.bp)
-    
+
+    @app.route("/home-test")
+    def home_test():
+        return app.config["SECRET_KEY"]
+
     return app

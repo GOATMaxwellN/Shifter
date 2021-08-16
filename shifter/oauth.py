@@ -7,6 +7,7 @@ from .auth import get_logged_in_user_id
 import requests
 from .db import get_db
 from functools import wraps
+import os
 
 
 bp = Blueprint("oauth", "shifter", url_prefix="/oauth")
@@ -22,15 +23,15 @@ def access_token_required(f):
 
 
 class GoogleAuth:
-    with current_app.open_instance_resource("google_auth.json", "r") as f:
-        google_auth = json.load(f)["web"]
-        CLIENT_ID = google_auth["client_id"]
-        CLIENT_SECRET = google_auth["client_secret"]
-        REDIRECT_URI = google_auth["redirect_uri"]
-        SCOPE = google_auth["scope"]
-        AUTH_URI = google_auth["auth_uri"]
-        TOKEN_URI = google_auth["token_uri"]
-        del google_auth
+    CLIENT_ID = "317001935803-kus33tcuh27qmr6b65vemimvl32f6p9r.apps.googleusercontent.com"
+    REDIRECT_URI = "http%3A//127.0.0.1%3A5000/oauth/google-callback"
+    TOKEN_URI = "https://oauth2.googleapis.com/token"
+    SCOPE = "https://www.googleapis.com/auth/calendar"
+    CLIENT_SECRET = os.getenv("GOOGLE_SECRET")
+    # If CLIENT_SECRET is not in env variables, get it from local instance file
+    if CLIENT_SECRET is None:
+        with current_app.open_instance_resource("google_secret.txt", "r") as secret:
+            CLIENT_SECRET = secret.read()
 
     @classmethod
     def get_auth_url(cls):
