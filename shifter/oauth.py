@@ -24,11 +24,11 @@ def access_token_required(f):
 
 class GoogleAuth:
     CLIENT_ID = "317001935803-kus33tcuh27qmr6b65vemimvl32f6p9r.apps.googleusercontent.com"
-    AUTH_URI = "https%3A//accounts.google.com/o/oauth2/auth"
+    AUTH_URI = "https://accounts.google.com/o/oauth2/auth"
     TOKEN_URI = "https://oauth2.googleapis.com/token"
     SCOPE = "https://www.googleapis.com/auth/calendar"
 
-    REDIRECT_URI = "https%3A//shifter-maxwelln.herokuapp.com/oauth/google-callback"\
+    REDIRECT_URI = "https://shifter-maxwelln.herokuapp.com/oauth/google-callback"\
         if current_app.env == "production"\
         else "http%3A//127.0.0.1%3A5000/oauth/google-callback"
 
