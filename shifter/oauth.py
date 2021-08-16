@@ -24,11 +24,16 @@ def access_token_required(f):
 
 class GoogleAuth:
     CLIENT_ID = "317001935803-kus33tcuh27qmr6b65vemimvl32f6p9r.apps.googleusercontent.com"
-    REDIRECT_URI = "http%3A//127.0.0.1%3A5000/oauth/google-callback"
+    AUTH_URI = "https%3A//accounts.google.com/o/oauth2/auth"
     TOKEN_URI = "https://oauth2.googleapis.com/token"
     SCOPE = "https://www.googleapis.com/auth/calendar"
-    CLIENT_SECRET = os.getenv("GOOGLE_SECRET")
+
+    REDIRECT_URI = "https%3A//shifter-maxwelln.herokuapp.com/oauth/google-callback"\
+        if current_app.env == "production"\
+        else "http%3A//127.0.0.1%3A5000/oauth/google-callback"
+
     # If CLIENT_SECRET is not in env variables, get it from local instance file
+    CLIENT_SECRET = os.getenv("GOOGLE_SECRET")
     if CLIENT_SECRET is None:
         with current_app.open_instance_resource("google_secret.txt", "r") as secret:
             CLIENT_SECRET = secret.read()
