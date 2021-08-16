@@ -17,7 +17,8 @@ for (let btn of document.querySelector(".config-connect-btns-wrapper").children)
     btn.addEventListener("click", showNameCalendarModal);
 }
 
-const CONNECT_TO_GOOGLE_URL = "http://127.0.0.1:5000/oauth/connect-to-google";
+const ROOT = window.location.protocol + "//" + window.location.host;
+const CONNECT_TO_GOOGLE_URL = ROOT + "/oauth/connect-to-google";
 const CONNECT_TO_OUTLOOK_URL = null;
 
 
