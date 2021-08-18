@@ -33,10 +33,7 @@ class GoogleAuth:
         else "http://127.0.0.1:5000/oauth/google-callback"
 
     # If CLIENT_SECRET is not in env variables, get it from local instance file
-    CLIENT_SECRET = os.getenv("GOOGLE_SECRET")
-    if CLIENT_SECRET is None:
-        with current_app.open_instance_resource("google_secret.txt", "r") as secret:
-            CLIENT_SECRET = secret.read()
+    CLIENT_SECRET = os.getenv("GOOGLE_SECRET", current_app.config["GOOGLE_SECRET"])
 
     @classmethod
     def get_auth_url(cls):
