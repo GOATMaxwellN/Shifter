@@ -1,10 +1,19 @@
 <!DOCTYPE hmtl>
-<html>
+<html lang="en">
     <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Shifter Homepage</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='home/style.css') }}">
     </head>
     <body>
         <h1>Shifter</h1>
-        <p>Easy way to fill up your calendar with all those random repetitive events</p>
+        <p>Create preset events and quickly add them to your calendar.</p>
+        <p>Easy way to fill up your calendar with repetitive events, like work shifts and meetings!</p>
+        <form class="auth-buttons-wrapper">
+            <button formaction="auth/login" class="log-in-btn">Log in</button>
+            <button formaction="auth/signup" class="sign-up-btn">Sign up</button>
+        </div>
     </body>
 </html>
