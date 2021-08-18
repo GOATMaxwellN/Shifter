@@ -1,0 +1,54 @@
+/* Initialization */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 1em;
+    width: 100vw;
+    height: 100vh;
+}
+
+body {
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+}
+
+h1 {
+    font-size: 4em;
+    color: rgb(205, 97, 85);;
+    padding: 1em;
+    text-align: center;
+}
+
+p {
+    text-align: center;
+    font-size: 2em;
+    margin-top: 0.3em;
+    margin-inline: 1em;
+}
+
+.auth-buttons-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin-top: 2em;
+}
+
+button {
+    font-size: 2em;
+    padding: 0.5em;
+    border-width: 3px;
+}
+
+.log-in-btn {
+    background-color:rgb(205, 97, 85);
+}
+
+.sign-up-btn {
+    border-color: rgb(205, 97, 85);
+    background-color: white;
+}
