@@ -9,11 +9,21 @@
     </head>
     <body>
         <h1>Shifter</h1>
-        <p>Create preset events and quickly add them to your calendar.</p>
+        <p>Create Shifts (preset events) and quickly add them to your calendar!</p>
         <p>Easy way to fill up your calendar with repetitive events, like work shifts and meetings!</p>
         <form class="auth-buttons-wrapper">
             <button formaction="auth/login" class="log-in-btn">Log in</button>
             <button formaction="auth/signup" class="sign-up-btn">Sign up</button>
+        </form>
+        <hr style="margin-block: 2em;">
+        <div class="supported-calendars">
+            <h2>Supported calendars:</h2>
+            <div class="calendar-entries">
+                <div class="calendar-entry">
+                    <img src="{{ url_for('static', filename='images/google-calendar-logo.png') }}" alt="Google Logo">
+                    <p>Google</p>
+                </div>
+            </div>
         </div>
     </body>
 </html>
