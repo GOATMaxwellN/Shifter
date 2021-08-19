@@ -28,12 +28,12 @@ class GoogleAuth:
     TOKEN_URI = "https://oauth2.googleapis.com/token"
     SCOPE = "https://www.googleapis.com/auth/calendar"
 
-    REDIRECT_URI = "https://shifter-maxwelln.herokuapp.com/oauth/google-callback"\
-        if current_app.env == "production"\
-        else "http://127.0.0.1:5000/oauth/google-callback"
-
-    # If CLIENT_SECRET is not in env variables, get it from local instance file
-    CLIENT_SECRET = os.getenv("GOOGLE_SECRET", current_app.config["GOOGLE_SECRET"])
+    if current_app.env == "production":
+        REDIRECT_URI = "https://shifter-maxwelln.herokuapp.com/oauth/google-callback"
+        CLIENT_SECRET = os.getenv("GOOGLE_SECRET")
+    else:
+        REDIRECT_URI = "http://127.0.0.1:5000/oauth/google-callback"
+        CLIENT_SECRET = current_app.config["GOOGLE_SECRET"]
 
     @classmethod
     def get_auth_url(cls):
