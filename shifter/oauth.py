@@ -26,7 +26,7 @@ class GoogleAuth:
     CLIENT_ID = "317001935803-kus33tcuh27qmr6b65vemimvl32f6p9r.apps.googleusercontent.com"
     AUTH_URI = "https://accounts.google.com/o/oauth2/auth"
     TOKEN_URI = "https://oauth2.googleapis.com/token"
-    SCOPE = "https://www.googleapis.com/auth/calendar"
+    SCOPE = "https://www.googleapis.com/auth/calendar%20https://www.googleapis.com/auth/userinfo.profile"
 
     if current_app.env == "production":
         REDIRECT_URI = "https://shifter-maxwelln.herokuapp.com/oauth/google-callback"
@@ -66,6 +66,16 @@ class GoogleAuth:
         )
 
         return r.json()
+
+    @classmethod
+    def get_account_id():
+        r = requests.get(
+            "https://people.googleapis.com/v1/people/me", params="personFields=metadata",
+            headers={"Content-Type": "application/x-www-form-urlencoded"}
+        )
+
+        account_id = r.json()["resourceName"].split('/')[1]
+        return account_id
 
     @staticmethod
     def get_access_token():
@@ -115,8 +125,7 @@ class GoogleAuth:
         )
         return access_token
 
-    @staticmethod
-    # @access_token_required
+    @staticmethod 
     def list_events(start, end, timezone, calendar_id):
         def make_request():
             # Have to manually % encode calendar_id
@@ -141,7 +150,6 @@ class GoogleAuth:
         return jsonify(r.json()["items"])
 
     @staticmethod
-    # @access_token_required
     def list_calendars():
         def make_request():
             endpoint = "https://www.googleapis.com/calendar/v3/users/me/calendarList"
@@ -175,7 +183,6 @@ class GoogleAuth:
         return r_cals
 
     @staticmethod
-    # @access_token_required
     def add_events(date_shifts, calendar_id):
 
         def make_request(event_resource):
@@ -282,10 +289,7 @@ def google_callback():
         # Get tokens with auth code and add access_token and refresh
         # token to the database
         tokens = GoogleAuth.fetch_tokens(request.args["code"])
-
-        # Temporary way to show me error response if there is an error
-        if "refresh_token" not in tokens:
-            return tokens
+        # TODO: account_id = GoogleAuth.get_account_id()
         
         # Get what the user wanted to call the calendar
         calendar_name = session["calendar_name"]
