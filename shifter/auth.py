@@ -41,7 +41,6 @@ def login():
             if pass_hash == user["password_hash"]:
                 # ObjectId is not JSON serializable, so convert to str
                 session["user_id"] = str(user["_id"])
-                session["credentials"] = {"google": {}, "outlook": {}}
                 return redirect(url_for("calendarview.index"))
             else:
                 error = "Incorrect password"
