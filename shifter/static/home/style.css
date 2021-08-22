@@ -12,9 +12,10 @@ html {
 }
 
 body {
-    height: 100%;
     width: 100%;
     overflow: auto;
+    position: relative;
+    min-height: 100vh;
 }
 
 h1 {
@@ -85,4 +86,17 @@ button {
     display: inline;
     place-self: center center;
     height: 5em;
+}
+
+footer {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    border-top: 1px solid grey;
+}
+
+footer a {
+    font-size: 1.3em;
+    float: right;
+    padding-right: 1em;
 }
