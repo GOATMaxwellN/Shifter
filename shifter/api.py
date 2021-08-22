@@ -75,8 +75,8 @@ def get_calendars():
     user = get_db().users.find({"_id": get_logged_in_user_id()})[0]
     cals = []
     for vendor in user["connected_calendars"]:
-        for cal_name in user["connected_calendars"][vendor]:
-            cals.append(f"{cal_name}-{vendor}")
+        for cal in user["connected_calendars"][vendor]:
+            cals.append(f"{cal['name']}-{vendor}")
 
     return jsonify(cals)
 
@@ -86,17 +86,12 @@ def delete_calendar():
     name, vendor = request.form["calendarInfo"].split('-')
 
     db = get_db()
-    # TODO: Once you change db layout, change this accordingly
     db.users.update_one(
         {"_id": get_logged_in_user_id()},
         {
             "$pull": {
-                f"connected_calendars.{vendor}": name
-            },
-            "$unset": {
-                f"access_tokens.{vendor}.{name}": '',
-                f"refresh_tokens.{vendor}.{name}": ''
-            } 
+                f"connected_calendars.{vendor}": {"name": name}
+            }
         }
     )
 

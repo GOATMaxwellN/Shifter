@@ -40,10 +40,12 @@ def index():
     else:
         for cal in user["connected_calendars"]:
             if user["connected_calendars"][cal]:
-                session["current_calendar"]["name"] = user["connected_calendars"][cal][0]
+                session["current_calendar"]["name"] = user["connected_calendars"][cal][0]["name"]
                 session["current_calendar"]["vendor"] = cal
                 session["calendar_last_used"] = session["current_calendar"]
                 break
+
+    print(session)
 
     return render_template(
         "calendarview/index.html",

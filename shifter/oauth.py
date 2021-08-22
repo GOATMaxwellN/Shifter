@@ -67,11 +67,14 @@ class GoogleAuth:
 
         return r.json()
 
-    @classmethod
-    def get_account_id():
+    @staticmethod
+    def get_account_id(access_token):
         r = requests.get(
             "https://people.googleapis.com/v1/people/me", params="personFields=metadata",
-            headers={"Content-Type": "application/x-www-form-urlencoded"}
+            headers={
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Authorization": f"Bearer {access_token}"
+            }
         )
 
         account_id = r.json()["resourceName"].split('/')[1]
@@ -82,15 +85,18 @@ class GoogleAuth:
         cur_cal_name = session["current_calendar"]["name"]
 
         user = get_db().users.find({"_id": get_logged_in_user_id()})[0]
-        token = user["access_tokens"]["Google"][cur_cal_name]
-        return token
+        for cal in user["connected_calendars"]["Google"]:
+            if cal["name"] == cur_cal_name:
+                return cal["access_token"]
 
     @staticmethod
     def get_refresh_token():
         cur_cal_name = session["current_calendar"]["name"]
 
         user = get_db().users.find({"_id": get_logged_in_user_id()})[0]
-        return user["refresh_tokens"]["Google"][cur_cal_name]
+        for cal in user["connected_calendars"]["Google"]:
+            if cal["name"] == cur_cal_name:
+                return cal["refresh_token"]
 
     @classmethod
     def get_new_access_token(cls):
@@ -112,14 +118,15 @@ class GoogleAuth:
 
         # Update the access token in the database and return
         access_token = r.json()["access_token"]
-        current_calendar = session["current_calendar"]["name"]
-        # session["credentials"]["google"]["access_token"] = access_token
-        print("updating access_token entry with", access_token)
+        cur_cal_name = session["current_calendar"]["name"]
         get_db().users.update_one(
-            {"_id": get_logged_in_user_id()},
+            {
+                "_id": get_logged_in_user_id(),
+                "connected_calendars.Google.name": cur_cal_name
+            },
             {
                 "$set": {
-                    f"access_tokens.Google.{current_calendar}": access_token
+                    f"connected_calendars.Google.$.access_token": access_token
                 }
             }
         )
@@ -289,7 +296,9 @@ def google_callback():
         # Get tokens with auth code and add access_token and refresh
         # token to the database
         tokens = GoogleAuth.fetch_tokens(request.args["code"])
-        # TODO: account_id = GoogleAuth.get_account_id()
+        account_id = GoogleAuth.get_account_id(tokens["access_token"])
+
+        # TODO: CHECK IF THEY'VE ALREADY CONNECTED THIS CALENDAR
         
         # Get what the user wanted to call the calendar
         calendar_name = session["calendar_name"]
@@ -302,11 +311,12 @@ def google_callback():
             {"_id": get_logged_in_user_id()},
             {
                 "$push": {
-                    "connected_calendars.Google": calendar_name
-                },
-                "$set": {
-                    f"access_tokens.Google.{calendar_name}": tokens["access_token"],
-                    f"refresh_tokens.Google.{calendar_name}": tokens["refresh_token"]
+                    "connected_calendars.Google": {
+                        "id": account_id,
+                        "name": calendar_name,
+                        "access_token": tokens["access_token"],
+                        "refresh_token": tokens["refresh_token"]
+                    }
                 }
             }
         )
