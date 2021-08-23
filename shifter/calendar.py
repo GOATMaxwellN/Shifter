@@ -17,39 +17,46 @@ def index():
     db = get_db()
     user = db.users.find({"_id": get_logged_in_user_id()})[0]
 
-    username = user["username"]
-    denied = None
+    params = {
+        "username": user["username"],
+        "denied": None,
+        "calendar_vendor": None,
+        "already_connected": None
+    }
 
     # User was redirected here after attempting to connect a calendar.
-    # 1. For one reason or the other, the attempt failed
-    if "denied" in request.args:
-        denied = True
-    # 2. The attempt was successful
-    elif "calendar" in request.args:
+    # 1. The attempt was successful
+    if "calendar" in request.args:
         calendar_info = json.loads(request.args["calendar"])
         session["current_calendar"] = calendar_info
         session["calendar_last_used"] = calendar_info
+        params["calendar_vendor"] = calendar_info["vendor"]
+    # 2. For one reason or the other, the attempt failed
+    elif "denied" in request.args:
+        params["denied"] = True
+    # 3. User attempted to connect a calenadar they already have connected
+    elif "already_connected" in request.args:
+        params["already_connected"] = True
 
     # User has just logged in or navigated straight here.
     # 1. Check if session has their most recently opened calendar.
     elif "calendar_last_used" in session:
         session["current_calendar"] = session["calendar_last_used"]
+        params["calendar_vendor"] = session["current_calendar"]["vendor"]
 
-    # 2. Go through user's db "connected_calendars" entry to see if
-    # they've connected a calendar in the past
-    else:
+
+    # If we still don't have a calendar to show, check account ofor any 
+    # calendars they've connected in the past
+    if not params["calendar_vendor"]:
         for cal in user["connected_calendars"]:
             if user["connected_calendars"][cal]:
-                session["current_calendar"]["name"] = user["connected_calendars"][cal][0]["name"]
-                session["current_calendar"]["vendor"] = cal
+                session["current_calendar"] = {
+                    "name": user["connected_calendars"][cal][0]["name"],
+                    "vendor": cal
+                }
                 session["calendar_last_used"] = session["current_calendar"]
+                params["calendar_vendor"] = session["current_calendar"]["vendor"]
                 break
 
     print(session)
-
-    return render_template(
-        "calendarview/index.html",
-        username=username,
-        calendar_vendor=session["current_calendar"].get("vendor", None),
-        denied=denied
-    )
+    return render_template("calendarview/index.html", **params)

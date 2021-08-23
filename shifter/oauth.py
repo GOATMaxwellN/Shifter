@@ -75,8 +75,8 @@ class GoogleAuth:
                 "Content-Type": "application/x-www-form-urlencoded",
                 "Authorization": f"Bearer {access_token}"
             }
-        )
 
+        )
         account_id = r.json()["resourceName"].split('/')[1]
         return account_id
 
@@ -298,7 +298,13 @@ def google_callback():
         tokens = GoogleAuth.fetch_tokens(request.args["code"])
         account_id = GoogleAuth.get_account_id(tokens["access_token"])
 
-        # TODO: CHECK IF THEY'VE ALREADY CONNECTED THIS CALENDAR
+        # Checks if user already has this calendar connected
+        db = get_db()
+        if db.users.find_one(
+            {"_id": get_logged_in_user_id(), "connected_calendars.Google.id": account_id}):
+            return redirect(
+                url_for("calendarview.index", already_connected=True)
+            )
         
         # Get what the user wanted to call the calendar
         calendar_name = session["calendar_name"]
@@ -306,7 +312,6 @@ def google_callback():
 
         # User now has connected their google calendar
         # and add user's refresh token to the db
-        db = get_db()
         db.users.update_one(
             {"_id": get_logged_in_user_id()},
             {

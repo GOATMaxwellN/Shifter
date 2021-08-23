@@ -9,7 +9,8 @@ if (document.querySelector(".connect-btns-wrapper")) {
 
     // Error msg may be shown if user failed to connect a calendar.
     try {
-        document.querySelector("#error").addEventListener("click", dismissErrMsg);
+        document.querySelectorAll("#error")
+            .forEach(v => v.addEventListener("click", dismissErrMsg));
     } catch (e) {}  // Catching TypeError if this element does not exist
 }
 
