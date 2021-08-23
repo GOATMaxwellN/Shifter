@@ -58,5 +58,4 @@ def index():
                 params["calendar_vendor"] = session["current_calendar"]["vendor"]
                 break
 
-    print(session)
     return render_template("calendarview/index.html", **params)
