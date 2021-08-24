@@ -26,8 +26,11 @@ def create_app(test_config=None):
     from . import db
     with app.app_context():
         db.init_app()
-        from . import oauth  # Need to init classes with app context 
+        from . import oauth_calendar_classes
+
+    from . import oauth
     app.register_blueprint(oauth.bp)
+    
 
     from . import api
     app.register_blueprint(api.bp)
