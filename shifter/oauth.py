@@ -84,7 +84,7 @@ class GoogleAuth:
     def get_access_token():
         cur_cal_name = session["current_calendar"]["name"]
 
-        user = get_db().users.find({"_id": get_logged_in_user_id()})[0]
+        user = get_db().users.find_one({"_id": get_logged_in_user_id()})
         for cal in user["connected_calendars"]["Google"]:
             if cal["name"] == cur_cal_name:
                 return cal["access_token"]
@@ -93,7 +93,7 @@ class GoogleAuth:
     def get_refresh_token():
         cur_cal_name = session["current_calendar"]["name"]
 
-        user = get_db().users.find({"_id": get_logged_in_user_id()})[0]
+        user = get_db().users.find_one({"_id": get_logged_in_user_id()})
         for cal in user["connected_calendars"]["Google"]:
             if cal["name"] == cur_cal_name:
                 return cal["refresh_token"]
@@ -220,7 +220,7 @@ class GoogleAuth:
                     }
                 }
 
-        user = get_db().users.find({"_id": get_logged_in_user_id()})[0]
+        user = get_db().users.find_one({"_id": get_logged_in_user_id()})
         index = 0
         for ds in json.loads(date_shifts):
             date, shift = ds.split("_")

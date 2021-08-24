@@ -13,8 +13,7 @@ def get_shifts():
     if "shifts" in session:
         return jsonify(session["shifts"])
     else:
-        db = get_db()
-        user = db.users.find({"_id": get_logged_in_user_id()})[0]
+        user = get_db().users.find_one({"_id": get_logged_in_user_id()})
         # Add shifts to the session
         session["shifts"] = list(user["shifts"].keys())
 
@@ -72,7 +71,7 @@ def delete_shift():
 
 @bp.route("/get-calendars", methods=("GET",))
 def get_calendars():
-    user = get_db().users.find({"_id": get_logged_in_user_id()})[0]
+    user = get_db().users.find_one({"_id": get_logged_in_user_id()})
     cals = []
     for vendor in user["connected_calendars"]:
         for cal in user["connected_calendars"][vendor]:

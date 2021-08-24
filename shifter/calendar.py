@@ -14,8 +14,7 @@ def index():
     session["current_calendar"] = {}
 
     # Connect to user
-    db = get_db()
-    user = db.users.find({"_id": get_logged_in_user_id()})[0]
+    user = get_db().users.find_one({"_id": get_logged_in_user_id()})
 
     params = {
         "username": user["username"],

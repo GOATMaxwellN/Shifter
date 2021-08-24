@@ -25,10 +25,7 @@ def login():
         password = request.form["password"]
         error = None
 
-        db = get_db()
-        user = None        
-        for doc in db.users.find({"username": username}):
-            user = doc
+        user = get_db().users.find_one({"username": username})     
 
         # If users exists, check password hashes
         if user is None:
@@ -62,9 +59,7 @@ def signup():
 
         db = get_db()
         # Check if username exists already
-        user = None
-        for doc in db.users.find({"username": username}):
-            user = doc
+        user = db.users.find_one({"username": username})
 
         # If username is not taken, validate the password.
         if user is None:
