@@ -13,15 +13,6 @@ import os
 bp = Blueprint("oauth", "shifter", url_prefix="/oauth")
 
 
-def access_token_required(f):
-    wraps(f)
-    def wrapper(*args):
-        if "access_token" not in session["credentials"]["google"]:
-            GoogleAuth.get_new_access_token()
-        return f(*args)
-    return wrapper
-
-
 class GoogleAuth:
     CLIENT_ID = "317001935803-kus33tcuh27qmr6b65vemimvl32f6p9r.apps.googleusercontent.com"
     AUTH_URI = "https://accounts.google.com/o/oauth2/auth"
@@ -262,7 +253,6 @@ class GoogleAuth:
             print("Had to handle this error:", request.json())
             # Invalid credentials
             if code == 401:
-                print("401 error handling")
                 GoogleAuth.get_new_access_token()
             # Rate limit exceeded
             elif code == 403 or code == 429:
