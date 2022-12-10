@@ -243,16 +243,16 @@ class GoogleAuth:
 
     @staticmethod
     def handle_api_errors(request, make_request):
-        while (code := request.status_code) != 200:
+        while request.status_code != 200:
             print("Had to handle this error:", request.json())
             # Invalid credentials
-            if code == 401:
+            if request.status_code == 401:
                 GoogleAuth.get_new_access_token()
             # Rate limit exceeded
-            elif code == 403 or code == 429:
+            elif request.status_code == 403 or request.status_code == 429:
                 pass
             # Backend error
-            elif code == 500:
+            elif request.status_code == 500:
                 pass
 
             request = make_request()
