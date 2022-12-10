@@ -7,9 +7,12 @@ def create_app(test_config=None):
         # If in Heroku prod server, get all config values from
         # env variables
         if app.env == "production":
+            print("I'm in prod!!")
             app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
             app.config["DB_URI"] = os.getenv("DB_URI")
+            print("Here is the db uri " + app.config["DB_URI"])
         else:
+            print("I am not in prod???")
             app.config.from_pyfile("config.cfg")
     else:
         app.config.from_mapping(test_config)
